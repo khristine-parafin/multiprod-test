@@ -1,0 +1,155 @@
+/* Single-product offer — combined review card, illustration, cross-offer. */
+
+/* Illustration block — now borderless; lives inside the combined card. */
+.sk-single-illus {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 22px 24px;
+  border: 1px solid var(--sk-line);
+  border-radius: 14px;
+  background: var(--sk-surface);
+}
+.sk-single-illus-text { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.sk-single-illus-eyebrow {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--sk-ink-3);
+}
+.sk-single-illus-name {
+  font-size: 19px; font-weight: 500; letter-spacing: -0.01em; margin: 0; color: var(--sk-ink);
+}
+.sk-single-illus-pitch {
+  font-size: 14px; line-height: 1.5; color: var(--sk-ink-2); margin: 0; max-width: 46ch;
+}
+.sk-single-illus-shape { flex-shrink: 0; width: 280px; }
+.sk-single-illus-shape.sk-shape { border-top: 0; padding-top: 0; }
+.sk--mobile .sk-single-illus { flex-direction: column; align-items: stretch; gap: 18px; }
+.sk--mobile .sk-single-illus-shape { width: 100%; }
+
+/* Combined card — illustration above, offer summary below, divider between */
+.sk-single-combined {
+  border: 1px solid var(--sk-line);
+  border-radius: 14px;
+  background: var(--sk-surface);
+  overflow: hidden;
+}
+.sk-single-combined-divider { height: 1px; background: var(--sk-line); }
+.sk-single-combined .sk-card-block { gap: 0; }
+.sk-single-combined .sk-plan {
+  border: 0; border-radius: 0; background: transparent;
+}
+
+/* Right-rail layout (desktop only) */
+.sk-single-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 32px;
+  align-items: start;
+}
+.sk-single-cols:has(.sk-single-rail--full) { grid-template-columns: minmax(0, 1fr) 480px; }
+.sk-single-main { display: flex; flex-direction: column; gap: 48px; min-width: 0; }
+.sk-single-rail { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+/* Narrow desktop / embedded panes: stack the rail so the wide rail +
+ * generous side padding can't crush the main column. */
+@media (max-width: 1100px) {
+  .sk-single-cols,
+  .sk-single-cols:has(.sk-single-rail--full) { grid-template-columns: 1fr; gap: 36px; }
+  .sk-single-rail { position: static; }
+}
+.sk-single-rail--full .sk-cta { flex-direction: column; align-items: stretch; gap: 14px; border: 0; box-shadow: none; }
+.sk-single-rail--full .sk-cta .sk-btn { width: 100%; justify-content: center; }
+.sk-single-rail--full .sk-cta-action { align-items: center; }
+.sk-single-rail--full .sk-cta-note { text-align: center; }
+
+/* Merged offer summary + CTA into one rail card (no "you'll borrow" copy) */
+.sk-rail-merged { border: 1px solid var(--sk-line); border-radius: 14px; background: var(--sk-surface); overflow: hidden; }
+.sk-rail-merged .sk-plan { border: 0; }
+.sk-rail-merged .sk-plan::before {
+  content: "Offer summary";
+  font-size: 18px; font-weight: 500; letter-spacing: -0.015em; color: var(--sk-ink);
+}
+.sk-rail-merged .sk-cta {
+  border: 0; border-top: 1px solid var(--sk-line); box-shadow: none; background: transparent;
+  flex-direction: column; align-items: stretch; gap: 14px; padding: 18px 24px 22px;
+}
+.sk-rail-merged .sk-cta-summary { display: none; }
+/* Right-rail offer summary: slightly larger type in the wider rail. */
+.sk-rail-merged .sk-plan::before { font-size: 20px; }
+.sk-rail-merged .sk-plan-item .label { font-size: 15px; }
+.sk-rail-merged .sk-plan-item .value { font-size: 17.5px; }
+.sk-rail-merged .sk-plan-item.total .label { font-size: 15px; }
+.sk-rail-merged .sk-plan-item.total .value { font-size: 30px; }
+.sk-rail-merged .sk-cta .sk-btn { width: 100%; justify-content: center; }
+.sk-rail-merged .sk-cta-action { align-items: center; }
+.sk-rail-merged .sk-cta-note { text-align: center; }
+
+/* Cross-offer promo card (rail-review main column) — leads with the
+ * alternative repayment illustration to sell the other product. */
+.sk-flexpromo {
+  display: flex; align-items: center; gap: 24px;
+  padding: 20px 22px;
+  border: 1px solid color-mix(in srgb, var(--sk-brand) 22%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--sk-brand) 8%, transparent);
+}
+.sk-flexpromo-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.sk-flexpromo-eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sk-brand); }
+.sk-flexpromo-title { font-size: 19px; font-weight: 500; letter-spacing: -0.01em; color: var(--sk-ink); margin: 0; }
+.sk-flexpromo-pitch { font-size: 13.5px; line-height: 1.5; color: var(--sk-ink-2); margin: 0; }
+.sk-flexpromo-pitch b { color: var(--sk-ink); font-weight: 600; }
+.sk-flexpromo-reasons { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.sk-flexpromo-reasons li { display: flex; align-items: center; gap: 9px; font-size: 14.5px; font-weight: 400; line-height: 1.35; color: var(--sk-ink); letter-spacing: -0.005em; }
+.sk-flexpromo-reasons svg { color: var(--sk-brand); flex-shrink: 0; }
+.sk-flexpromo-text .sk-crossoffer-btn { align-self: flex-start; margin-top: 2px; }
+.sk-flexpromo-illus { flex-shrink: 0; width: 210px; }
+.sk-flexpromo-illus.sk-shape { border-top: 0; padding-top: 0; }
+.sk--mobile .sk-flexpromo { flex-direction: column; align-items: stretch; gap: 16px; }
+.sk--mobile .sk-flexpromo-illus { width: 100%; }
+
+/* Stack the promo behind the "how you'll pay back" card so it peeks out
+ * from behind it (connected, popping-up look). */
+.sk-paystack { position: relative; display: flex; flex-direction: column; }
+.sk-paystack > .sk-single-illus { position: relative; z-index: 2; box-shadow: 0 8px 18px -12px rgba(10,10,10,0.18); }
+.sk-paystack > .sk-flexpromo { position: relative; z-index: 1; margin-top: -18px; padding-top: 34px; }
+
+/* Cross-offer card — tinted primary, no icon, with value props.
+ * Inline (callout): row on desktop (button beside copy), column on mobile.
+ * Rail: always a vertical card. */
+.sk-crossoffer {
+  display: flex; flex-direction: row; align-items: center; gap: 20px;
+  padding: 18px 20px;
+  border: 1px solid color-mix(in srgb, var(--sk-brand) 22%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--sk-brand) 8%, transparent);
+}
+.sk-crossoffer-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.sk-crossoffer-title { font-size: 15px; font-weight: 600; color: var(--sk-ink); letter-spacing: -0.005em; }
+.sk-crossoffer-desc { font-size: 13.5px; color: var(--sk-ink-2); line-height: 1.45; }
+.sk-crossoffer-desc b { color: var(--sk-ink); font-weight: 600; }
+.sk-crossoffer-props { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.sk-crossoffer-props li { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--sk-ink-2); }
+.sk-crossoffer-props svg { color: var(--sk-brand); flex-shrink: 0; }
+.sk-crossoffer-btn {
+  appearance: none; background: none; border: 0; font-family: inherit; flex-shrink: 0;
+  display: inline-block; white-space: nowrap;
+  font-size: 13.5px; font-weight: 500; color: var(--sk-brand); cursor: pointer; padding: 4px 2px;
+}
+.sk-crossoffer-btn span[aria-hidden] { margin-left: 6px; }
+.sk-crossoffer-btn:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Inline callout stacks on mobile (button below copy) */
+.sk--mobile .sk-crossoffer { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+/* Rail variant — always a vertical card */
+.sk-crossoffer--rail { flex-direction: column; align-items: flex-start; gap: 14px; }
+
+/* Repayment rate row on duration selectors (single-product, showRate) */
+.sk-dur-card-rate {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--sk-line);
+  font-size: 13px; font-variant-numeric: tabular-nums;
+}
+.sk-dur-card-rate .l { color: var(--sk-ink-3); }
+.sk-dur-card-rate .v { color: var(--sk-ink); font-weight: 600; }

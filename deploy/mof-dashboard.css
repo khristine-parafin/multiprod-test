@@ -1,0 +1,128 @@
+/* mof-dashboard.css — a partner dashboard shell (mercury-styled) that the
+ * capital widgets get embedded into, so they can be shown at full width in
+ * a realistic setting. Tokens come from offer-mercury.css; the dashboard
+ * root carries .mof so --mof-* vars resolve for it and the embedded widgets. */
+
+.mofdash {
+  min-height: 100%;
+  display: flex; flex-direction: column;
+  background: var(--mof-bg);
+  color: var(--mof-ink);
+  font-family: var(--mof-text);
+}
+
+/* top bar */
+.mofdash-top {
+  display: flex; align-items: center; gap: 22px;
+  padding: 0 26px; height: 60px;
+  background: var(--mof-surface);
+  border-bottom: 1px solid var(--mof-line);
+  flex-shrink: 0;
+}
+.mofdash-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mof-display);
+  font-weight: 600; font-size: 16px; letter-spacing: -0.01em;
+}
+.mofdash-brand-mark {
+  width: 27px; height: 27px; border-radius: 7px;
+  background: var(--mof-accent); color: var(--mof-accent-on);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; font-family: var(--mof-display);
+}
+.mofdash-search {
+  margin-left: 10px;
+  flex: 0 1 300px;
+  height: 34px; border-radius: 9px;
+  border: 1px solid var(--mof-line);
+  background: var(--mof-bg);
+  display: flex; align-items: center; gap: 9px; padding: 0 12px;
+  color: var(--mof-ink-3); font-size: 13.5px;
+}
+.mofdash-top-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.mofdash-icon-btn {
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--mof-ink-2); border: 1px solid transparent;
+}
+.mofdash-icon-btn:hover { background: var(--mof-surface-2); }
+.mofdash-search svg { width: 16px; height: 16px; flex-shrink: 0; }
+.mofdash-icon-btn svg { width: 18px; height: 18px; }
+.mofdash-avatar {
+  width: 32px; height: 32px; border-radius: 999px;
+  background: var(--mof-accent-soft); color: var(--mof-accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12.5px; font-weight: 600;
+}
+
+/* shell: sidebar + main */
+.mofdash-shell { flex: 1; display: flex; min-height: 0; }
+.mofdash-side {
+  width: 226px; flex-shrink: 0;
+  border-right: 1px solid var(--mof-line);
+  background: var(--mof-surface);
+  padding: 18px 14px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.mofdash-side-label {
+  font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--mof-ink-3); padding: 10px 12px 6px;
+}
+.mofdash-navitem {
+  display: flex; align-items: center; gap: 11px;
+  padding: 9px 12px; border-radius: 9px;
+  font-size: 14px; font-weight: 500; color: var(--mof-ink-2);
+  cursor: pointer;
+}
+.mofdash-navitem:hover { background: var(--mof-surface-2); }
+.mofdash-navitem.is-on { background: var(--mof-accent-soft); color: var(--mof-accent); font-weight: 600; }
+.mofdash-navitem svg { width: 17px; height: 17px; flex-shrink: 0; }
+.mofdash-side-spacer { flex: 1; }
+
+.mofdash-main {
+  flex: 1; min-width: 0;
+  padding: 32px 40px 48px;
+  display: flex; flex-direction: column; gap: 26px;
+}
+.mofdash-pagehead { display: flex; flex-direction: column; gap: 6px; }
+.mofdash-eyebrow {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.13em;
+  color: var(--mof-accent);
+}
+.mofdash-h1 {
+  font-family: var(--mof-display);
+  font-size: 30px; font-weight: 500; letter-spacing: -0.02em; margin: 0; color: var(--mof-ink);
+}
+.mofdash-lede { font-size: 15px; line-height: 1.5; color: var(--mof-ink-2); margin: 0; max-width: 60ch; }
+
+/* embed slot — constrains widget width within the page */
+.mofdash-embed { width: 100%; max-width: 960px; }
+.mofdash-embed--wide { max-width: 920px; }
+.mofdash-embed-row { display: flex; gap: 20px; align-items: stretch; max-width: 920px; }
+.mofdash-embed-row > * { flex: 1; min-width: 0; }
+
+/* a faint secondary card to ground the widget mid-page */
+.mofdash-aux {
+  width: 100%; max-width: 960px;
+  border: 1px solid var(--mof-line); border-radius: 14px;
+  background: var(--mof-surface);
+  padding: 18px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.mofdash-aux-title { font-size: 14.5px; font-weight: 600; color: var(--mof-ink); }
+.mofdash-aux-sub { font-size: 13px; color: var(--mof-ink-2); margin-top: 2px; }
+.mofdash-aux .mof-btn { flex-shrink: 0; }
+
+/* mobile dashboard — drop the sidebar, tighten padding */
+.mofdash--mobile .mofdash-side { display: none; }
+.mofdash--mobile .mofdash-top { padding: 0 16px; gap: 12px; }
+.mofdash--mobile .mofdash-search { display: none; }
+.mofdash--mobile .mofdash-main { padding: 22px 16px 36px; gap: 20px; }
+.mofdash--mobile .mofdash-h1 { font-size: 24px; }
+.mofdash--mobile .mofdash-embed,
+.mofdash--mobile .mofdash-embed--wide,
+.mofdash--mobile .mofdash-aux { max-width: 100%; }
+.mofdash--mobile .mofdash-embed-row { flex-direction: column; max-width: 100%; }
+
+/* widget width override when embedded (fills the embed slot) */
+.mofw--wide { width: 100%; max-width: 100%; }

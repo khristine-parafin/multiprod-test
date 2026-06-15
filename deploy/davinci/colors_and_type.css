@@ -1,0 +1,224 @@
+/* ──────────────────────────────────────────────────────────────────
+ * Parafin daVinci — Colors & Typography Tokens
+ *
+ * Source of truth: buildparafin/davinci src/theme/default/index.ts
+ * paired with the design-system Figma file ("White-label Design System").
+ *
+ * daVinci is white-label: the *brand color* is supplied at runtime
+ * (via the `color` prop on Button, Checkbox, etc) so each partner
+ * can theme primary surfaces. Everything else — the black/white
+ * scale, status colors, type, spacing — is fixed.
+ * ────────────────────────────────────────────────────────────────── */
+
+/* ── Brand fonts (Inter variable, self-hosted) ───────────────────── */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/InterVariable.ttf") format("truetype-variations"),
+       url("fonts/InterVariable.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/InterVariable-Italic.ttf") format("truetype-variations"),
+       url("fonts/InterVariable-Italic.ttf") format("truetype");
+}
+/* Mono substitution — flagged in README. Swap for licensed Menlo in prod. */
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  /* ── Greys (black-scale): the spine of the system ─────────────── */
+  --dv-black-100: #262626;  /* primary text                          */
+  --dv-black-90:  #303030;  /* headings, primary on light            */
+  --dv-black-80:  #474747;  /* secondary text                        */
+  --dv-black-70:  #5E5E5E;
+  --dv-black-60:  #6E6E6E;  /* meta / "Powered by" caption           */
+  --dv-black-50:  #949494;  /* tertiary text / placeholder           */
+  --dv-black-40:  #A8A8A8;
+  --dv-black-30:  #C2C2C2;  /* unselected checkbox / control border  */
+  --dv-black-20:  #E8E8E8;  /* divider lines / card outline          */
+  --dv-black-10:  #FAFAFA;  /* alt page background / hover row       */
+  --dv-black-0:   #FFFFFF;  /* card surface                          */
+
+  /* ── Semantic / status ────────────────────────────────────────── */
+  --dv-red:        #FC6A4A;  /* destructive / error (theme default)   */
+  --dv-green:      #39C776;  /* success / approved                    */
+  --dv-red-tint:   #FFF9F8;  /* error background                      */
+  --dv-green-tint: #E7F8EF;  /* success background                    */
+  --dv-amber:      #FF9900;  /* warning (from figma usage)            */
+  --dv-amber-tint: #FFF8EB;
+  --dv-info:       #4969F5;  /* informational accent (link blue)      */
+
+  /* ── Brand (white-label primary) ──────────────────────────────── *
+   * Override --dv-brand at the <html> level to re-skin every CTA.   *
+   * Default mirrors the Figma "merchant red" used across mocks.     */
+  --dv-brand:        #ED0004;  /* hearty-kitchens-ish red             */
+  --dv-brand-text:   #FFFFFF;  /* text on brand                       */
+  --dv-brand-12: color-mix(in srgb, var(--dv-brand) 12%, transparent);
+  --dv-brand-20: color-mix(in srgb, var(--dv-brand) 20%, transparent);
+  --dv-brand-28: color-mix(in srgb, var(--dv-brand) 28%, transparent);
+  --dv-brand-40: color-mix(in srgb, var(--dv-brand) 40%, transparent);
+  --dv-brand-92: color-mix(in srgb, var(--dv-brand) 92%, transparent);
+
+  /* ── Semantic surface tokens ─────────────────────────────────── */
+  --dv-bg-app:        #F6F6F3;  /* off-white page background (figma)  */
+  --dv-bg-surface:    #FFFFFF;
+  --dv-bg-subtle:     #FAFAFA;
+  --dv-fg:            var(--dv-black-100);
+  --dv-fg-muted:      var(--dv-black-60);
+  --dv-fg-subtle:     var(--dv-black-50);
+  --dv-border:        var(--dv-black-20);
+  --dv-border-strong: var(--dv-black-30);
+  --dv-hover:         var(--dv-black-10);
+
+  /* ── Figma section-bg accents (used only inside Figma frames) ── */
+  --dv-section-grey:   #E8E8E8;
+  --dv-section-blue:   #EBF0F4;
+  --dv-section-mauve:  #F4F0F4;
+  --dv-section-violet: #EDEBF6;
+  --dv-section-pink:   #F3E9F4;
+  --dv-section-lilac:  #E8E4F7;
+  --dv-section-azure:  #DAE8F4;
+
+  /* ── Typography ──────────────────────────────────────────────── */
+  --dv-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --dv-font-mono: "JetBrains Mono", "Menlo", ui-monospace, monospace;
+
+  /* Type scale (Figma "Typography" specimen, davinci Typography.tsx)
+   * size / line-height / weight pairs                              */
+  --dv-headline-size:        60px;  --dv-headline-lh:      72px;
+  --dv-large-header-size:    48px;  --dv-large-header-lh:  58px;
+  --dv-header-size:          32px;  --dv-header-lh:        40px;
+  --dv-title-size:           24px;  --dv-title-lh:         32px;
+  --dv-subtitle-size:        18px;  --dv-subtitle-lh:      24px;
+  --dv-body-size:            16px;  --dv-body-lh:          24px;
+  --dv-large-label-size:     14px;  --dv-large-label-lh:   20px;
+  --dv-caption-size:         13px;  --dv-caption-lh:       17px;
+  --dv-small-label-size:     11px;  --dv-small-label-lh:   12px;
+
+  --dv-weight-regular:  400;
+  --dv-weight-medium:   500;
+  --dv-weight-semibold: 600;
+  --dv-weight-bold:     700;
+
+  /* ── Spacing — 4px base; common steps surfaced as tokens ──────── */
+  --dv-space-1:  4px;
+  --dv-space-2:  8px;
+  --dv-space-3:  12px;
+  --dv-space-4:  16px;
+  --dv-space-5:  20px;
+  --dv-space-6:  24px;
+  --dv-space-8:  32px;
+  --dv-space-10: 40px;
+  --dv-space-12: 48px;
+  --dv-space-16: 64px;
+
+  /* ── Radii ───────────────────────────────────────────────────── */
+  --dv-radius-sm:   4px;   /* tags, small chips                     */
+  --dv-radius-md:   6px;   /* buttons, inputs                       */
+  --dv-radius-lg:   12px;  /* nested cards / list rows              */
+  --dv-radius-xl:   16px;  /* primary card surface                  */
+  --dv-radius-2xl:  24px;  /* large containers / modals             */
+  --dv-radius-3xl:  32px;  /* full-bleed feature containers (figma) */
+  --dv-radius-pill: 999px;
+
+  /* ── Elevation — soft, ambient, never harsh ──────────────────── */
+  --dv-shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --dv-shadow-sm: 0 2px 4px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.04);
+  --dv-shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+  --dv-shadow-lg: 0 12px 32px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.04);
+
+  /* ── Motion ──────────────────────────────────────────────────── */
+  --dv-motion-fast:    120ms ease;
+  --dv-motion-default: 200ms ease;
+  --dv-motion-slow:    320ms cubic-bezier(.2,.7,.2,1);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+ * Semantic element styles — use these classes directly so designs
+ * read like the davinci `<Typography variant=…>` component.
+ * ────────────────────────────────────────────────────────────────── */
+
+html, body { font-family: var(--dv-font-sans); color: var(--dv-fg); }
+
+.dv-headline {
+  font-family: var(--dv-font-sans);
+  font-size: var(--dv-headline-size);
+  line-height: var(--dv-headline-lh);
+  font-weight: var(--dv-weight-bold);
+  letter-spacing: -0.005em;
+  color: var(--dv-black-100);
+}
+.dv-large-header {
+  font-family: var(--dv-font-sans);
+  font-size: var(--dv-large-header-size);
+  line-height: var(--dv-large-header-lh);
+  font-weight: var(--dv-weight-semibold);
+  color: var(--dv-black-100);
+}
+.dv-header, h1 {
+  font-family: var(--dv-font-sans);
+  font-size: var(--dv-header-size);
+  line-height: var(--dv-header-lh);
+  font-weight: var(--dv-weight-bold);
+  letter-spacing: 0.0025em;
+  color: var(--dv-black-100);
+}
+.dv-title, h2 {
+  font-family: var(--dv-font-sans);
+  font-size: var(--dv-title-size);
+  line-height: var(--dv-title-lh);
+  font-weight: var(--dv-weight-semibold);
+  color: var(--dv-black-100);
+}
+.dv-subtitle, h3 {
+  font-family: var(--dv-font-sans);
+  font-size: var(--dv-subtitle-size);
+  line-height: var(--dv-subtitle-lh);
+  font-weight: var(--dv-weight-medium);
+  letter-spacing: 0.0015em;
+  color: var(--dv-black-100);
+}
+.dv-body, p {
+  font-family: var(--dv-font-sans);
+  font-size: var(--dv-body-size);
+  line-height: var(--dv-body-lh);
+  font-weight: var(--dv-weight-regular);
+  letter-spacing: -0.0016em;
+  color: var(--dv-black-90);
+}
+.dv-body-medium { font-weight: var(--dv-weight-medium); }
+.dv-body-semibold { font-weight: var(--dv-weight-semibold); }
+.dv-large-label {
+  font-size: var(--dv-large-label-size);
+  line-height: var(--dv-large-label-lh);
+  font-weight: var(--dv-weight-medium);
+}
+.dv-caption {
+  font-size: var(--dv-caption-size);
+  line-height: var(--dv-caption-lh);
+  font-weight: var(--dv-weight-regular);
+  color: var(--dv-black-60);
+}
+.dv-caption-medium { font-weight: var(--dv-weight-medium); }
+.dv-small-label {
+  font-size: var(--dv-small-label-size);
+  line-height: var(--dv-small-label-lh);
+  font-weight: var(--dv-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--dv-black-60);
+}
+.dv-mono { font-family: var(--dv-font-mono); }
+
+/* link styling matches the davinci Link component */
+a, .dv-link {
+  color: var(--dv-info);
+  text-decoration: none;
+  transition: color var(--dv-motion-fast);
+}
+a:hover, .dv-link:hover { text-decoration: underline; }

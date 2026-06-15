@@ -1,0 +1,2173 @@
+/* sleek.css — sleek variants for V1B + V1E
+ * A minimal, ramp/stripe/pipe-inspired layer that lives alongside
+ * the davinci tokens. Self-contained: every rule is scoped under `.sk`.
+ * Body fonts: Inter Tight (Google Fonts). Numbers: tabular nums + slight
+ * negative tracking. No drop shadows, hairline borders, lots of air.
+ */
+
+/* ── Tokens ───────────────────────────────────────────────────── */
+
+/* Brand tokens live at the root so inline overrides on <html> from the
+ * Tweaks panel win the cascade. The `.sk` class scope re-declares the
+ * surface/text tokens but intentionally NOT the brand ones. */
+:root {
+  --sk-brand:        #0A0A0A;
+  --sk-brand-hover:  #1F1F1F;
+  --sk-brand-on:     #FFFFFF;
+}
+
+.sk {
+  /* surfaces */
+  --sk-bg:            #FAFAF7;
+  --sk-bg-cool:       #F7F7F8;
+  --sk-surface:       #FFFFFF;
+  --sk-surface-2:     #F4F4F1;
+
+  /* lines */
+  --sk-line:          rgba(10, 10, 10, 0.08);
+  --sk-line-strong:   rgba(10, 10, 10, 0.16);
+
+  /* text */
+  --sk-ink:           #0A0A0A;
+  --sk-ink-2:         #4A4A4A;
+  --sk-ink-3:         #767676;
+  --sk-ink-4:         #A0A09B;
+
+  /* state */
+  --sk-on-ring:       #0A0A0A;
+  --sk-recommend:     #1B5E20;
+  --sk-recommend-bg:  #EEF6EE;
+  --sk-disabled:      #C9C9C4;
+
+  /* dark variant (pipe) */
+  --sk-dark-bg:       #0B0B0C;
+  --sk-dark-surface:  #131316;
+  --sk-dark-line:     rgba(255,255,255,0.10);
+  --sk-dark-line-2:   rgba(255,255,255,0.18);
+  --sk-dark-ink:      #F4F4EF;
+  --sk-dark-ink-2:    #B3B3B0;
+  --sk-dark-ink-3:    #8C8C88;
+
+  /* type */
+  --sk-font:          'Inter Tight', 'Inter', system-ui, -apple-system, sans-serif;
+  --sk-mono:          'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  font-family: var(--sk-font);
+  font-feature-settings: "cv11", "ss01", "tnum";
+  color: var(--sk-ink);
+  background: var(--sk-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.sk *, .sk *::before, .sk *::after { box-sizing: border-box; }
+
+.sk .num     { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.sk .num-lg  { font-variant-numeric: tabular-nums; letter-spacing: -0.035em; }
+.sk .mono    { font-family: var(--sk-mono); font-variant-numeric: tabular-nums; letter-spacing: 0; }
+
+/* ── Bold typography mode ────────────────────────────────────────
+ * When html[data-weight="bold"] is set, headers and large numerics
+ * shift to weight 700 for a more confident, financial feel.
+ */
+html[data-weight="bold"] .sk .sk-h1,
+html[data-weight="bold"] .sk .sk-step-title,
+html[data-weight="bold"] .sk .sk-card-name,
+html[data-weight="bold"] .sk .sk-co-opt-name,
+html[data-weight="bold"] .sk .sk-dur-card-name {
+  font-weight: 700;
+}
+html[data-weight="bold"] .sk .sk-amount-field input,
+html[data-weight="bold"] .sk .sk-co-amount-input input,
+html[data-weight="bold"] .sk .sk-co-borrowing-val,
+html[data-weight="bold"] .sk .sk-co-total-val,
+html[data-weight="bold"] .sk .sk-stat-val,
+html[data-weight="bold"] .sk .sk-co-opt-stat-val {
+  font-weight: 700;
+}
+
+/* eyebrow / caps */
+.sk-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--sk-ink-3);
+}
+.sk-eyebrow .pip {
+  display: inline-block; width: 6px; height: 6px;
+  border-radius: 999px; background: var(--sk-ink);
+}
+
+/* sk-page — padding container, gap controls section spacing */
+.sk-page {
+  padding: 56px 144px 64px;
+  display: flex; flex-direction: column; gap: 48px;
+  font-size: 15px; line-height: 1.5;
+}
+/* Accordion (collapsible-step) designs: cap the content to a narrow, centered
+ * column (full-bleed background preserved via symmetric padding). Crushes the
+ * steps into a tight reading column on wide screens and never overflows —
+ * the max(56px, …) floor keeps a comfortable gutter on small viewports. */
+.sk-page:has(.sk-acc) {
+  padding-left: max(56px, calc((100% - 760px) / 2));
+  padding-right: max(56px, calc((100% - 760px) / 2));
+}
+
+.sk-h1 {
+  font-size: 40px;
+  line-height: 1.05;
+  font-weight: 500;
+  letter-spacing: -0.028em;
+  margin: 0;
+}
+.sk-lede {
+  font-size: 16px; line-height: 1.55;
+  color: var(--sk-ink-2);
+  max-width: 62ch;
+  margin: 0;
+  text-wrap: pretty;
+}
+.sk-lede b { color: var(--sk-ink); font-weight: 500; }
+
+.sk-h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--sk-ink-3);
+  font-weight: 500;
+  margin: 0 0 14px;
+}
+
+/* Step header (used by both V1B variants) */
+.sk-step { display: flex; flex-direction: column; gap: 18px; }
+.sk-step-head {
+  display: flex; align-items: center; gap: 14px;
+  padding-bottom: 8px;
+}
+.sk-step-num {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 999px;
+  background: var(--sk-ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  flex-shrink: 0;
+}
+.sk-step-title {
+  font-size: 24px; font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.1;
+}
+.sk-step-sub {
+  margin: 0; font-size: 13px; color: var(--sk-ink-3);
+  line-height: 1.5;
+}
+
+/* ── Amount control (shared) ─────────────────────────────────── */
+
+.sk-amount {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: end;
+  padding: 20px 0 4px;
+}
+.sk-amount-field {
+  display: flex; align-items: baseline; gap: 4px;
+  border-bottom: 1px solid var(--sk-line-strong);
+  padding: 0 0 8px;
+  width: max-content;
+}
+.sk-amount-field .pre {
+  font-size: 36px; font-weight: 500; color: var(--sk-ink-3);
+  letter-spacing: -0.02em;
+}
+.sk-amount-field input {
+  border: 0; outline: 0; background: transparent;
+  font-family: inherit;
+  font-size: 56px; line-height: 1; font-weight: 500;
+  letter-spacing: -0.04em;
+  color: var(--sk-brand);
+  font-variant-numeric: tabular-nums;
+  width: 7ch;
+  padding: 0;
+}
+.sk-amount-field .suf {
+  font-size: 12px; color: var(--sk-ink-3); letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-left: 4px; align-self: end; padding-bottom: 12px;
+}
+.sk-amount-cap {
+  font-size: 12px; color: var(--sk-ink-3);
+  text-align: right; line-height: 1.55;
+}
+.sk-amount-cap b { color: var(--sk-ink); font-weight: 500; }
+
+/* Slider — two physical track segments separated by a small gap; each
+ * segment has fully-rounded ends so the gap reads as a smooth break. */
+.sk-slider {
+  position: relative;
+  height: 44px;
+  margin-top: 30px;
+}
+.sk-slider-track-bg {
+  position: absolute; top: 19px;
+  height: 6px;
+  background: var(--sk-line-strong);
+  border-radius: 999px;
+  z-index: 0;
+}
+.sk-slider-track-bg-flex { left: 0; }
+.sk-slider-track-bg-term { right: 0; }
+.sk-slider-track-fill {
+  position: absolute; left: 0; top: 19px;
+  height: 6px;
+  background: var(--sk-brand);
+  border-radius: 999px;
+  z-index: 1;
+  pointer-events: none;
+}
+.sk-slider input[type=range] {
+  position: absolute; inset: 0; width: 100%; height: 44px;
+  appearance: none; -webkit-appearance: none;
+  background: transparent; margin: 0;
+  z-index: 2;
+}
+.sk-slider input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 24px; height: 24px; border-radius: 999px;
+  background: var(--sk-brand);
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 1px var(--sk-line-strong), 0 1px 3px rgba(0,0,0,0.12);
+  margin-top: 0;
+  cursor: grab;
+}
+.sk-slider input[type=range]::-webkit-slider-thumb:active { cursor: grabbing; }
+.sk-slider input[type=range]::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 999px;
+  background: var(--sk-brand); border: 4px solid #fff;
+  box-shadow: 0 0 0 1px var(--sk-line-strong), 0 1px 3px rgba(0,0,0,0.12);
+  cursor: grab;
+}
+/* Gap punched into the track at flex-max position — creates visual
+ * separation between the Flex-available zone and the Term-only zone
+ * by painting the page background color over the track briefly. */
+.sk-slider-gap {
+  position: absolute;
+  top: 19px; height: 6px;
+  width: 8px;
+  transform: translateX(-50%);
+  background: var(--sk-bg);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.sk-slider-tick {
+  position: absolute;
+  top: -22px;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center;
+  pointer-events: none;
+}
+.sk-slider-tick-line {
+  width: 1px; height: 14px; background: var(--sk-line-strong);
+  margin-top: 4px;
+  border-radius: 1px;
+}
+.sk-slider-tick-label {
+  font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--sk-ink-3);
+  white-space: nowrap;
+  font-weight: 500;
+}
+.sk-slider-axis {
+  position: relative;
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 15px; color: var(--sk-ink-2);
+  margin-top: 6px;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+.sk-slider-axis .hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sk-ink-3);
+  letter-spacing: 0.02em;
+  font-variant-numeric: normal;
+}
+.sk-slider-flexmax {
+  position: absolute;
+  transform: translateX(-50%);
+  top: -22px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  color: var(--sk-ink-3);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  z-index: 3;
+}
+.sk-slider-flexmax::after {
+  content: '';
+  width: 1px;
+  height: 10px;
+  background: var(--sk-line-strong);
+  margin-top: 2px;
+}
+.sk-slider-axis em {
+  font-style: normal; color: var(--sk-ink-3);
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.sk-slider-axis .hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sk-ink-3);
+  letter-spacing: 0.02em;
+  font-variant-numeric: normal;
+}
+
+/* ── Option cards (twin layout) ──────────────────────────────── */
+
+.sk-twin {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.sk-card {
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: 14px;
+  padding: 24px 24px 22px;
+  display: flex; flex-direction: column; gap: 22px;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+  position: relative;
+}
+.sk-card:hover { border-color: var(--sk-line-strong); }
+.sk-card.is-on { border-color: var(--sk-brand); }
+.sk-card.is-on::before {
+  content: ''; position: absolute; inset: -1px;
+  border: 1px solid var(--sk-brand); border-radius: 14px;
+  pointer-events: none;
+}
+.sk-card.is-disabled {
+  background: #F7F7F3;
+  border-color: rgba(10, 10, 10, 0.10);
+  border-style: solid;
+  cursor: not-allowed;
+}
+.sk-card.is-disabled:hover { border-color: rgba(10, 10, 10, 0.10); }
+.sk-card.is-disabled .sk-card-product-line,
+.sk-card.is-disabled .sk-card-name,
+.sk-card.is-disabled .sk-card-pitch { opacity: 0.5; }
+.sk-card.is-disabled .sk-radio { opacity: 0.4; }
+
+/* Card header — radio + name + cap + recommend */
+.sk-card-head {
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.sk-radio {
+  width: 18px; height: 18px; min-width: 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--sk-line-strong);
+  margin-top: 2px;
+  position: relative;
+  transition: border-color .15s ease;
+}
+.sk-card.is-on .sk-radio,
+.sk-co-opt.is-on .sk-radio,
+.sk-dur-card.is-on .sk-radio {
+  border-color: var(--sk-brand);
+}
+.sk-card.is-on .sk-radio::after,
+.sk-co-opt.is-on .sk-radio::after,
+.sk-dur-card.is-on .sk-radio::after {
+  content: ''; position: absolute;
+  inset: 3px; border-radius: 999px;
+  background: var(--sk-brand);
+}
+.sk-card-title-row {
+  display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0;
+}
+.sk-card-nameline {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+}
+.sk-card-name {
+  font-size: 22px; font-weight: 500; letter-spacing: -0.018em;
+  margin: 0;
+}
+.sk-card-cap {
+  font-size: 11px;
+  color: var(--sk-ink-3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  font-weight: 500;
+}
+.sk-tag {
+  font-size: 11px; padding: 2px 8px; border-radius: 999px;
+  background: var(--sk-recommend-bg);
+  color: var(--sk-recommend);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.sk-card-pitch {
+  font-size: 14px;
+  color: var(--sk-ink-2);
+  margin: 4px 0 0;
+}
+
+/* Twin hero stats inside a card */
+.sk-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--sk-line);
+  border-radius: 10px;
+  background: var(--sk-bg);
+  overflow: hidden;
+}
+.sk-stat {
+  padding: 18px 18px 16px;
+  display: flex; flex-direction: column; gap: 4px;
+  position: relative;
+}
+.sk-stat + .sk-stat::before {
+  content: ''; position: absolute; left: 0; top: 12px; bottom: 12px;
+  width: 1px; background: var(--sk-line);
+}
+.sk-stat-label {
+  font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--sk-ink-3); font-weight: 500;
+}
+.sk-stat-val {
+  font-size: 30px; font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--sk-ink);
+  font-variant-numeric: tabular-nums;
+  display: flex; align-items: baseline; gap: 6px;
+  margin-top: 6px;
+}
+.sk-stat-val .unit {
+  font-size: 14px; font-weight: 400;
+  letter-spacing: 0;
+  color: var(--sk-ink-3);
+}
+.sk-stat-sub {
+  font-size: 12px; color: var(--sk-ink-3);
+  margin-top: 4px;
+}
+
+/* Repayment shape strip */
+.sk-shape {
+  border-top: 1px solid var(--sk-line);
+  padding-top: 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.sk-shape-row { height: 36px; display: flex; align-items: end; gap: 3px; }
+.sk-shape-cap {
+  font-size: 11px; color: var(--sk-ink-3);
+  letter-spacing: 0.02em;
+}
+
+/* Totals */
+.sk-totals {
+  border-top: 1px dashed var(--sk-line);
+  padding-top: 14px;
+  display: flex; flex-direction: column; gap: 4px;
+  font-size: 13px;
+}
+.sk-totals-row {
+  display: flex; justify-content: space-between;
+  color: var(--sk-ink-3);
+}
+.sk-totals-row.total {
+  color: var(--sk-ink); font-weight: 500;
+  margin-top: 4px;
+  font-size: 14px;
+}
+.sk-totals-row .v {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* CTA strip \u2014 sticky on scroll at the bottom of the page */
+/* CTA strip — light surface with the brand-colored Continue button as
+ * the visual anchor. Sticky at the bottom of the viewport. */
+.sk-cta {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px;
+  padding: 16px 18px 16px 22px;
+  border: 1.5px solid var(--sk-line-strong);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  box-shadow: 0 8px 28px rgba(10, 10, 10, 0.07), 0 1px 2px rgba(10, 10, 10, 0.04);
+  position: sticky;
+  bottom: 16px;
+  z-index: 5;
+  margin-top: 16px;
+}
+.sk--ledger .sk-cta { background: rgba(252, 252, 249, 0.94); }
+
+/* Bare CTA — no summary, so drop the surrounding card chrome and let the
+ * brand button span the full width (used by the single-column desktop pages). */
+.sk-cta--bare {
+  border: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0;
+  border-radius: 0;
+  gap: 0;
+}
+.sk--ledger .sk-cta--bare { background: none; }
+.sk--ledger.sk--fullpage .sk-cta.sk-cta--bare { background: none; box-shadow: none; border: 0; padding: 0; }
+.sk-cta--bare .sk-cta-action { width: 100%; align-items: stretch; }
+.sk-cta--bare .sk-btn { width: 100%; justify-content: center; padding: 16px 22px; }
+.sk-cta-summary {
+  font-size: 14px; color: var(--sk-ink-2);
+  max-width: 60ch;
+  line-height: 1.5;
+  margin: 0;
+  text-wrap: pretty;
+}
+.sk-cta-summary b { color: var(--sk-ink); font-weight: 500; }
+.sk-cta-summary-stack {
+  display: flex; flex-direction: column;
+  gap: 4px;
+  max-width: 60%;
+  min-width: 0;
+}
+.sk-cta-action {
+  display: flex; flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.sk-cta-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--sk-ink-3);
+  letter-spacing: 0;
+  text-align: right;
+}
+.sk-cta .sk-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: var(--sk-brand);
+  color: var(--sk-brand-on);
+}
+.sk-cta .sk-btn:hover { background: var(--sk-brand-hover); }
+
+.sk-btn {
+  appearance: none; border: 0; cursor: pointer;
+  font-family: inherit;
+  font-size: 14px; font-weight: 500;
+  letter-spacing: -0.005em;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--sk-brand);
+  color: var(--sk-brand-on);
+  transition: background .15s ease, opacity .15s ease;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.sk-btn:hover { background: var(--sk-brand-hover); }
+.sk-btn.ghost {
+  background: transparent;
+  color: var(--sk-ink);
+  border: 1px solid var(--sk-line-strong);
+}
+.sk-btn.ghost:hover { background: var(--sk-bg); }
+
+/* Powered by */
+.sk-powered {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 11px; color: var(--sk-ink-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sk-powered img { height: 12px; opacity: 0.7; }
+
+/* Disabled note — kept as a minimal block in case other variants pass
+ * an `unavailableNote` prop. The slim card no longer renders one here;
+ * disabled state is communicated entirely by the pitch line + empty
+ * radio + dashed border, matching the duration-card disabled style. */
+.sk-unavail {
+  border: 1px dashed var(--sk-line-strong);
+  background: var(--sk-bg);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--sk-ink-2);
+  line-height: 1.55;
+}
+.sk-unavail b { color: var(--sk-ink); font-weight: 500; }
+
+/* Duration chips (legacy small inline use) */
+.sk-dur-chips { display: inline-flex; gap: 6px; }
+.sk-dur-chips button {
+  appearance: none; border: 1px solid var(--sk-line);
+  background: var(--sk-surface);
+  border-radius: 999px;
+  font-family: inherit; font-size: 12px; font-weight: 500;
+  padding: 6px 12px;
+  color: var(--sk-ink-2);
+  cursor: pointer;
+  transition: all .12s ease;
+}
+.sk-dur-chips button:hover { border-color: var(--sk-line-strong); color: var(--sk-ink); }
+.sk-dur-chips button.on {
+  background: var(--sk-brand); color: var(--sk-brand-on); border-color: var(--sk-brand);
+}
+
+/* ── Step 3 · Duration cards (Flex-only) ─────────────────────── */
+
+.sk-dur-step {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.sk-dur-card {
+  appearance: none; cursor: pointer;
+  text-align: left;
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+  font-family: inherit;
+  transition: border-color .15s ease, background .15s ease;
+  position: relative;
+}
+.sk-dur-card:hover { border-color: var(--sk-line-strong); }
+.sk-dur-card.is-on { border-color: var(--sk-brand); }
+.sk-dur-card.is-disabled {
+  background: #F7F7F3;
+  border-color: rgba(10, 10, 10, 0.10);
+  border-style: solid;
+  cursor: not-allowed;
+}
+.sk-dur-card.is-disabled:hover { border-color: rgba(10, 10, 10, 0.10); }
+.sk-dur-card.is-disabled .sk-radio { opacity: 0.4; }
+.sk-dur-card.is-disabled .sk-dur-card-pitch {
+  color: var(--sk-ink-3);
+  opacity: 0.7;
+}
+.sk-dur-card.is-disabled .sk-dur-card-name { opacity: 0.5; }
+.sk-dur-card.is-disabled {
+  background: #F7F7F3;
+  border-color: rgba(10, 10, 10, 0.10);
+  border-style: solid;
+  cursor: not-allowed;
+}
+.sk-dur-card.is-disabled:hover { border-color: rgba(10, 10, 10, 0.10); }
+.sk-dur-card.is-disabled .sk-radio { opacity: 0.4; }
+.sk-dur-card.is-disabled .sk-dur-card-pitch {
+  color: var(--sk-ink-3);
+  opacity: 0.7;
+}
+.sk-dur-card.is-disabled .sk-dur-card-name { opacity: 0.5; }
+.sk-dur-card.is-on::before {
+  content: ''; position: absolute; inset: -1px;
+  border: 1px solid var(--sk-brand); border-radius: 12px;
+  pointer-events: none;
+}
+.sk-dur-card-body {
+  display: flex; flex-direction: column; gap: 6px;
+  min-width: 0;
+}
+.sk-dur-card-nameline {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+}
+.sk-dur-card-name {
+  font-size: 18px; font-weight: 500; letter-spacing: -0.012em;
+  margin: 0;
+}
+.sk-dur-card-hold {
+  font-size: 12px; color: var(--sk-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.sk-dur-card-pitch {
+  font-size: 13px; color: var(--sk-ink-3);
+  margin: 0;
+}
+/* Text button on a disabled duration card — jumps back to the amount step
+ * and drops the slider to that duration's max. Stays full-opacity/clickable
+ * even though its parent card is dimmed + non-selectable. */
+.sk-dur-card-adjust {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 4px;
+  font-size: 13px; font-weight: 500;
+  color: var(--sk-brand);
+  cursor: pointer;
+  opacity: 1;
+  width: fit-content;
+}
+.sk-dur-card-adjust:hover { text-decoration: underline; }
+.sk-dur-card-adjust:focus-visible {
+  outline: 2px solid var(--sk-brand); outline-offset: 2px; border-radius: 4px;
+}
+.sk-dur-card.is-disabled .sk-dur-card-adjust { opacity: 1; color: var(--sk-brand); }
+.sk-dur-card-totals {
+  display: flex; gap: 18px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--sk-line);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.sk-dur-card-totals .l { color: var(--sk-ink-3); }
+.sk-dur-card-totals .v { color: var(--sk-ink); font-weight: 500; margin-left: 4px; }
+
+/* Pipe (dark) variant: duration cards look right on white left pane already.
+   No override needed — Step 3 lives in the left config column. */
+
+/* Highlight pill in the top-right of each duration card */
+.sk-dur-card-pill {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: color-mix(in srgb, var(--sk-brand) 6%, transparent);
+  color: var(--sk-brand);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── Funding destination card ────────────────────────────────────
+ * Sits inside the Step 4 review block. Header title sits at the top of
+ * the card (mirroring the "Your plan" title in the plan panel); the
+ * bank row + ETA pill sit below.
+ */
+.sk-funding {
+  display: flex; flex-direction: column; gap: 16px;
+  padding: 22px 24px 20px;
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: 14px;
+}
+.sk-funding-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+.sk-funding-title {
+  font-size: 20px; font-weight: 500;
+  letter-spacing: -0.018em;
+  margin: 0;
+}
+.sk-funding-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+}
+.sk-funding-left {
+  display: flex; align-items: center; gap: 14px;
+}
+.sk-funding-meta {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.sk-funding-name {
+  font-size: 15px; font-weight: 500;
+  color: var(--sk-ink);
+  letter-spacing: -0.005em;
+}
+.sk-funding-num {
+  font-size: 13px;
+  color: var(--sk-ink-3);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.sk-funding-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: color-mix(in srgb, var(--sk-brand) 6%, transparent);
+  color: var(--sk-brand);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 10px 5px 8px;
+  border-radius: 999px;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+}
+
+/* Mobile sizes */
+.sk--mobile .sk-funding { padding: 18px 18px 16px; }
+.sk--mobile .sk-funding-title { font-size: 17px; }
+.sk--mobile .sk-funding-name { font-size: 14px; }
+.sk--mobile .sk-funding-num { font-size: 12px; }
+
+/* ── Schedule-a-call support card ────────────────────────────────
+ * Sits beneath the funding row. Soft callout with a text-style CTA so
+ * it doesn't compete with the main Continue button.
+ */
+/* ── Schedule-a-call support card ────────────────────────────────
+ * Multiple visual treatments, all framed as a TIP not an informative
+ * section. Switch via supportStyle: 'inline' | 'tinted' | 'outline' | 'card'.
+ */
+.sk-support {
+  display: flex; flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: 12px;
+}
+.sk-support-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border-radius: 999px;
+  color: var(--sk-brand);
+  background: color-mix(in srgb, var(--sk-brand) 10%, transparent);
+}
+.sk-support-icon svg { display: block; }
+.sk-support-text {
+  display: flex; flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.sk-support-title {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--sk-ink);
+  margin: 0;
+  line-height: 1.4;
+}
+.sk-support-body {
+  font-size: 13px;
+  color: var(--sk-ink-3);
+  margin: 0;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.sk-support .sk-text-btn {
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+/* Variant: inline — no fill, no border, just inline hint */
+.sk-support--inline {
+  padding: 8px 0;
+  border-radius: 0;
+}
+
+/* Variant: tinted — brand-color at 5% opacity, no border */
+.sk-support--tinted {
+  background: color-mix(in srgb, var(--sk-brand) 5%, transparent);
+}
+
+/* Variant: outline — hairline border, no fill */
+.sk-support--outline {
+  background: transparent;
+  border: 1px solid var(--sk-line);
+}
+
+/* Variant: card — light grey fill (the previous treatment) */
+.sk-support--card {
+  background: var(--sk-surface-2);
+}
+.sk-text-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sk-brand);
+  padding: 0;
+  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 4px;
+  letter-spacing: -0.005em;
+}
+.sk-text-btn:hover { text-decoration: underline; text-underline-offset: 3px; }
+.sk-text-btn span { transition: transform .12s ease; }
+.sk-text-btn:hover span { transform: translateX(2px); }
+
+.sk--mobile .sk-support {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+}
+.sk--mobile .sk-support-title { font-size: 14px; }
+.sk--mobile .sk-support-body { font-size: 12.5px; }
+
+/* Sleek brand-aware tweaks for option cards */
+.sk-co-opt.is-on { border-color: var(--sk-brand); box-shadow: inset 0 0 0 1px var(--sk-brand); }
+
+/* ── V1B · "Ledger" — Ramp-style refinements ─────────────────── */
+
+.sk--ledger {
+  background: #FAFAF7;
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+.sk--ledger .sk-h1 { letter-spacing: -0.032em; }
+.sk--ledger .sk-stat-val {
+  font-family: var(--sk-font);
+  letter-spacing: -0.035em;
+  font-weight: 500;
+}
+.sk--ledger .sk-stats {
+  background: linear-gradient(180deg, #FCFCF9, #F8F8F4);
+}
+
+/* ── V1B · "Editorial" — Stripe-style ────────────────────────── */
+
+.sk--editorial {
+  background: #FFFFFF;
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+/* ── Full-page mode — drop the viewport scroll + sticky CTA ─────
+ * For artboards that show the entire page from top to bottom.
+ * CTA stays in normal flow at the bottom (no float/blur/shadow).
+ */
+.sk--fullpage {
+  height: auto !important;
+  overflow: visible !important;
+}
+.sk--fullpage .sk-cta {
+  position: static;
+  bottom: auto;
+  background: var(--sk-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  border-radius: 12px;
+}
+.sk--ledger.sk--fullpage .sk-cta { background: var(--sk-surface); }
+.sk--editorial .sk-page {
+  padding: 64px 144px;
+}
+.sk--editorial .sk-h1 {
+  font-size: 44px; letter-spacing: -0.03em;
+  font-weight: 500;
+}
+.sk--editorial .sk-card {
+  border-radius: 18px;
+  padding: 28px 28px 24px;
+  background: var(--sk-surface);
+  border: 1px solid rgba(10,10,10,0.07);
+}
+.sk--editorial .sk-card.is-on {
+  border-color: rgba(10,10,10,0.18);
+  background: #FBFBFB;
+}
+.sk--editorial .sk-card.is-on::before { display: none; }
+.sk--editorial .sk-stats {
+  border-radius: 12px;
+}
+.sk--editorial .sk-stat-val { font-size: 32px; }
+.sk--editorial .sk-btn {
+  border-radius: 8px;
+  padding: 13px 22px;
+}
+
+/* ── V1E · "Checkout" (light Stripe-like two-pane) ───────────── */
+
+.sk-checkout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  min-height: 100%;
+  background: var(--sk-surface);
+  font-family: var(--sk-font);
+  font-feature-settings: "cv11","ss01","tnum";
+  color: var(--sk-ink);
+}
+
+.sk-co-config {
+  padding: 56px 56px 56px;
+  border-right: 1px solid var(--sk-line);
+  display: flex; flex-direction: column; gap: 36px;
+  min-width: 0;
+}
+.sk-co-summary {
+  background: #FAFAF7;
+  padding: 56px 40px;
+  position: relative;
+}
+.sk-co-summary-inner {
+  position: sticky; top: 32px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+
+.sk-co-amount {
+  display: flex; flex-direction: column; gap: 18px;
+}
+.sk-co-amount-input {
+  display: flex; align-items: baseline;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--sk-line-strong);
+  width: max-content;
+}
+.sk-co-amount-input .pre {
+  font-size: 32px; color: var(--sk-ink-3); font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.sk-co-amount-input input {
+  border: 0; outline: 0; background: transparent;
+  font-family: inherit;
+  font-size: 48px; line-height: 1; font-weight: 500;
+  letter-spacing: -0.035em;
+  color: var(--sk-brand);
+  font-variant-numeric: tabular-nums;
+  width: 6.5ch; padding: 0 0 0 2px;
+}
+.sk-co-amount-input .suf {
+  font-size: 11px; color: var(--sk-ink-3); letter-spacing: 0.08em;
+  text-transform: uppercase;
+  align-self: end; padding-bottom: 10px; margin-left: 4px;
+}
+
+/* Repayment option rows (stacked, not twin) */
+.sk-co-options {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.sk-co-opt {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 18px;
+  align-items: start;
+  padding: 22px 24px;
+  border: 1px solid var(--sk-line);
+  border-radius: 12px;
+  background: var(--sk-surface);
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+}
+.sk-co-opt:hover { border-color: var(--sk-line-strong); }
+.sk-co-opt.is-disabled {
+  background: var(--sk-bg); opacity: .72;
+  cursor: not-allowed; border-style: dashed;
+}
+.sk-co-opt-body {
+  display: flex; flex-direction: column; gap: 6px;
+  min-width: 0;
+}
+.sk-co-opt-nameline {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+}
+.sk-co-opt-name { font-size: 18px; font-weight: 500; letter-spacing: -0.012em; margin: 0; }
+.sk-co-opt-cap {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--sk-ink-3); font-weight: 500;
+}
+.sk-co-opt-pitch { font-size: 14px; color: var(--sk-ink-2); margin: 0; }
+.sk-co-opt-stats {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px 24px;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--sk-line);
+}
+.sk-co-opt-stat-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--sk-ink-3); font-weight: 500;
+}
+.sk-co-opt-stat-val {
+  font-size: 20px; font-weight: 500; letter-spacing: -0.018em;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.sk-co-opt-stat-sub {
+  font-size: 12px; color: var(--sk-ink-3); margin-top: 2px;
+}
+.sk-co-opt-shape {
+  align-self: center;
+  width: 120px; height: 44px;
+  display: flex; align-items: end; gap: 2px;
+}
+
+/* Summary panel */
+.sk-co-summary h3 {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em;
+  color: var(--sk-ink-3); font-weight: 500;
+  margin: 0 0 8px;
+}
+.sk-co-borrowing {
+  display: flex; flex-direction: column; gap: 4px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--sk-line);
+}
+.sk-co-borrowing-label {
+  font-size: 12px; color: var(--sk-ink-3); letter-spacing: 0.04em;
+}
+.sk-co-borrowing-val {
+  font-size: 40px; font-weight: 500;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  color: var(--sk-brand);
+}
+.sk-co-lines {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 4px 0 22px;
+  border-bottom: 1px solid var(--sk-line);
+}
+.sk-co-line {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 12px;
+  font-size: 13px;
+}
+.sk-co-line .l { color: var(--sk-ink-3); }
+.sk-co-line .v { color: var(--sk-ink); font-variant-numeric: tabular-nums; }
+.sk-co-line.muted .v { color: var(--sk-ink-2); }
+
+.sk-co-total {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-top: 8px;
+}
+.sk-co-total-label {
+  font-size: 13px; color: var(--sk-ink-3);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.sk-co-total-val {
+  font-size: 28px; font-weight: 500;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sk-co-cta {
+  width: 100%;
+  justify-content: center;
+  padding: 14px 22px;
+  font-size: 15px;
+}
+
+.sk-co-fineprint {
+  font-size: 12px; color: var(--sk-ink-3);
+  line-height: 1.55;
+}
+.sk-co-fineprint b { color: var(--sk-ink-2); font-weight: 500; }
+
+/* ── V1E · "Pipe" (dark right pane) ──────────────────────────── */
+
+.sk-pipe { background: var(--sk-surface); }
+.sk-pipe .sk-co-summary {
+  background: var(--sk-dark-bg);
+  color: var(--sk-dark-ink);
+  border-left: 1px solid var(--sk-dark-line);
+}
+.sk-pipe .sk-co-summary h3 { color: var(--sk-dark-ink-3); }
+.sk-pipe .sk-co-borrowing { border-bottom-color: var(--sk-dark-line); }
+.sk-pipe .sk-co-borrowing-label { color: var(--sk-dark-ink-3); }
+.sk-pipe .sk-co-borrowing-val { color: var(--sk-dark-ink); }
+.sk-pipe .sk-co-lines { border-bottom-color: var(--sk-dark-line); }
+.sk-pipe .sk-co-line .l { color: var(--sk-dark-ink-3); }
+.sk-pipe .sk-co-line .v { color: var(--sk-dark-ink); }
+.sk-pipe .sk-co-line.muted .v { color: var(--sk-dark-ink-2); }
+.sk-pipe .sk-co-total-label { color: var(--sk-dark-ink-3); }
+.sk-pipe .sk-co-total-val { color: var(--sk-dark-ink); }
+.sk-pipe .sk-co-cta {
+  background: var(--sk-dark-ink);
+  color: var(--sk-dark-bg);
+}
+.sk-pipe .sk-co-cta:hover { background: #fff; }
+.sk-pipe .sk-co-fineprint { color: var(--sk-dark-ink-3); }
+.sk-pipe .sk-co-fineprint b { color: var(--sk-dark-ink-2); }
+.sk-pipe .sk-powered { color: var(--sk-dark-ink-3); }
+.sk-pipe .sk-powered img { filter: invert(1) brightness(1.6); opacity: 0.65; }
+
+/* Pipe — left pane more austere */
+.sk-pipe .sk-co-config { padding: 56px 56px; }
+
+/* Shape bars (LEGACY — kept for fallback) */
+.sk-bars { display: flex; align-items: end; gap: 2px; height: 100%; width: 100%; }
+.sk-bars span {
+  flex: 1;
+  background: var(--sk-ink-2);
+  border-radius: 1px;
+  opacity: 0.6;
+}
+.sk-bars.term span { height: 60% !important; background: var(--sk-ink-2); }
+.sk-pipe .sk-bars span { background: var(--sk-dark-ink-2); opacity: 0.55; }
+
+/* ── Term shape variants ─────────────────────────────────────────
+ * Four ways to convey "fixed weekly amount, every week". The current
+ * bar style is kept as a fallback option. The other three are tighter
+ * and read less like a volume meter.
+ */
+
+/* ── Flex shape — clear sales-vs-payment illustration ────────────
+ * Each day = a single bar whose total height = sales. The brand-
+ * colored slice at the bottom of each bar = the % held back. One day
+ * is "closed" (zero sales → zero payment), illustrating the variable-
+ * cadence promise of Flex.
+ */
+.sk-shape-flex {
+  display: flex; flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  font-family: var(--sk-font);
+}
+.sk-shape-flex-legend {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--sk-ink-3);
+  letter-spacing: 0.005em;
+}
+.sk-shape-flex-legend > span { white-space: nowrap; }
+.sk-shape-flex-legend .dot {
+  display: inline-block;
+  width: 10px; height: 4px;
+  border-radius: 1px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+.sk-shape-flex-legend .dot.sales { background: var(--sk-line-strong); }
+.sk-shape-flex-legend .dot.pay   { background: var(--sk-brand); }
+.sk-shape-flex-row {
+  display: flex; align-items: end;
+  gap: 12px;
+  height: 78px;
+}
+.sk-shape-flex-day {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 7px;
+  height: 100%;
+  justify-content: end;
+}
+.sk-shape-flex-bars {
+  width: 100%;
+  height: 100%;
+  display: flex; align-items: end; justify-content: center;
+  padding: 0 2px;
+}
+.sk-shape-flex-bar {
+  position: relative;
+  width: 100%;
+  max-width: 24px;
+  background: var(--sk-line-strong);
+  border-radius: 4px 4px 0 0;
+  display: flex; flex-direction: column; justify-content: end;
+  overflow: hidden;
+}
+.sk-shape-flex-pay {
+  width: 100%;
+  background: var(--sk-brand);
+}
+/* Zero-sales day — a baseline marker instead of a bar, so the column
+ * still reads as "a day", and the only number on the whole chart. */
+.sk-shape-flex-day.is-zero .sk-shape-flex-bars { align-items: end; }
+.sk-shape-flex-zerotag {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--sk-ink-3);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  padding-bottom: 1px;
+  border-bottom: 2px dashed var(--sk-line-strong);
+}
+.sk-shape-flex-flat {
+  width: 80%;
+  max-width: 28px;
+  height: 1.5px;
+  background: var(--sk-line-strong);
+  border-radius: 1px;
+  align-self: center;
+}
+.sk-shape-flex-amt.zero {
+  color: var(--sk-ink-3);
+  font-weight: 500;
+}
+.sk-shape-flex-amt {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--sk-ink-2);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.sk-shape-flex-amt .pay {
+  color: var(--sk-brand);
+  font-size: 10px;
+  margin-left: 3px;
+  font-weight: 500;
+}
+.sk-shape-flex-day-label {
+  font-size: 10px;
+  color: var(--sk-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  font-weight: 500;
+}
+/* Amount-annotated variant — daily sales $ above each bar, withheld $ below. */
+.sk-shape-flex--amts .sk-shape-flex-row { height: auto; align-items: stretch; }
+.sk-shape-flex--amts .sk-shape-flex-day { height: auto; gap: 5px; justify-content: flex-end; }
+.sk-shape-flex--amts .sk-shape-flex-bars { height: 64px; }
+.sk-shape-flex--amts .sk-shape-flex-pay { min-height: 4px; }
+.sk-shape-flex-sales {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sk-ink);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.sk-shape-flex-withheld {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--sk-brand);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.sk-shape-flex-day.is-zero .sk-shape-flex-withheld { color: var(--sk-ink-3); }
+.sk-shape-flex-note {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--sk-ink-3);
+}
+/* Compact variant — bars only, no labels (for V1E option rows) */
+.sk-shape-flex.compact {
+  height: 100%;
+  gap: 0;
+}
+.sk-shape-flex.compact .sk-shape-flex-row { height: 100%; gap: 3px; }
+.sk-shape-flex.compact .sk-shape-flex-legend,
+.sk-shape-flex.compact .sk-shape-flex-amt,
+.sk-shape-flex.compact .sk-shape-flex-day-label { display: none; }
+.sk-shape-flex.compact .sk-shape-flex-bar { max-width: none; border-radius: 1.5px 1.5px 0 0; }
+
+/* Pipe (dark) overrides — sales bar tone is the dark line ink */
+.sk-pipe .sk-shape-flex-bar { background: var(--sk-dark-line-2); }
+.sk-pipe .sk-shape-flex-flat { background: var(--sk-dark-line-2); }
+.sk-pipe .sk-shape-flex-legend { color: var(--sk-dark-ink-3); }
+.sk-pipe .sk-shape-flex-legend .dot.sales { background: var(--sk-dark-line-2); }
+.sk-pipe .sk-shape-flex-amt { color: var(--sk-dark-ink-2); }
+.sk-pipe .sk-shape-flex-sales { color: var(--sk-dark-ink); }
+.sk-pipe .sk-shape-flex-day.is-zero .sk-shape-flex-withheld { color: var(--sk-dark-ink-3); }
+.sk-pipe .sk-shape-flex-day-label { color: var(--sk-dark-ink-3); }
+
+/* Slim card — leads with the action phrase ("Pay back as you sell"),
+ * demotes the product name + cap to a small secondary line. Users care
+ * most about the experience, less about the product label.
+ */
+.sk-card--slim {
+  gap: 18px;
+  padding: 22px 24px 20px;
+}
+.sk-card--slim .sk-stats,
+.sk-card--slim .sk-totals { display: none; }
+.sk-card--slim .sk-shape {
+  border-top: none;
+  padding-top: 4px;
+  padding-left: 32px;
+}
+.sk-card--slim .sk-card-name {
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.sk-card--slim .sk-card-product-line {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sk-ink-3);
+  font-weight: 500;
+  margin: 0 0 6px;
+}
+.sk-card--slim .sk-card-product {
+  color: var(--sk-brand);
+  font-weight: 600;
+}
+.sk-card--slim .sk-card-product-line .sep {
+  color: var(--sk-ink-4);
+}
+.sk-card--slim .sk-card-product-line .cap {
+  color: var(--sk-ink-3);
+}
+.sk-card--slim .sk-card-pitch {
+  font-size: 14px;
+  color: var(--sk-ink-2);
+  margin-top: 4px;
+}
+
+/* Inline plan preview — single-line strip between Step 2 and Step 3
+ * (preview style "inline-row").
+ */
+.sk-inline-preview {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 14px 20px;
+  background: var(--sk-bg);
+  border: 1px solid var(--sk-line);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--sk-ink-2);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.sk-inline-preview .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sk-ink-3);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.sk-inline-preview b { color: var(--sk-ink); font-weight: 500; }
+
+/* Review stack — offer summary, funding, and support card sit close
+ * together as one cohesive "review" block inside Step 4. */
+.sk-review {
+  display: flex; flex-direction: column;
+  gap: 24px;
+}
+
+/* Card block — wraps a labelled card. The label sits above the card as
+ * an uppercase eyebrow so the card itself is just the content surface. */
+.sk-card-block {
+  display: flex; flex-direction: column;
+  gap: 10px;
+}
+.sk-card-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--sk-ink-3);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Offer summary panel — comprehensive grid of derived stats
+ * (preview style "panel"). Appears after Step 3.
+ */
+.sk-plan {
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: 14px;
+  padding: 22px 24px 20px;
+  display: flex; flex-direction: column; gap: 22px;
+}
+.sk-plan-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 16px;
+}
+.sk-plan-title {
+  font-size: 20px; font-weight: 500;
+  letter-spacing: -0.018em;
+  margin: 0;
+}
+.sk-plan-sub {
+  font-size: 13px; color: var(--sk-ink-3);
+}
+.sk-plan-grid {
+  display: flex;
+  flex-direction: column;
+}
+.sk-plan-item {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+}
+.sk-plan-divider {
+  height: 1px;
+  background: var(--sk-line);
+  margin: 8px 0;
+}
+.sk-plan-item .label {
+  font-size: 14px;
+  color: var(--sk-ink-3);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+.sk-plan-item .value {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--sk-ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.005em;
+  text-align: right;
+}
+.sk-plan-item.total {
+  padding: 8px 0 0;
+}
+.sk-plan-item.total .label {
+  font-size: 14px;
+  color: var(--sk-ink-2);
+  font-weight: 500;
+}
+.sk-plan-item.total .value {
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  color: var(--sk-brand);
+}
+
+/* SkInfo — tooltip icon next to labels */
+.sk-info {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  color: var(--sk-ink-4);
+  cursor: help;
+  vertical-align: -1px;
+  transition: color .12s ease;
+}
+.sk-info:hover,
+.sk-info:focus { color: var(--sk-ink-2); outline: none; }
+.sk-info svg { display: block; }
+
+/* ── Compare table — side-by-side stats between Step 2 and Step 3 ──
+ * A dedicated comparison surface. Labels run down the left; one column
+ * per option. The selected option's column gets a brand-tinted highlight
+ * to indicate it's the active choice without screaming.
+ */
+.sk-compare {
+  border: 1px solid var(--sk-line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--sk-surface);
+}
+.sk-compare-head {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.1fr) 1fr 1fr;
+  padding: 12px 18px;
+  background: var(--sk-bg);
+  border-bottom: 1px solid var(--sk-line);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sk-ink-3);
+  font-weight: 500;
+}
+.sk-compare-head .label-cell {
+  display: flex; align-items: center; gap: 8px;
+}
+.sk-compare-head .option-cell {
+  display: flex; align-items: baseline; gap: 8px;
+  color: var(--sk-ink);
+  text-transform: none;
+  letter-spacing: -0.005em;
+  font-size: 14px;
+  font-weight: 500;
+}
+.sk-compare-head .option-cell .name { font-size: 14px; }
+.sk-compare-head .option-cell .cap {
+  font-size: 11px;
+  color: var(--sk-ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+.sk-compare-head .option-cell.is-on { color: var(--sk-brand); }
+
+.sk-compare-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.1fr) 1fr 1fr;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--sk-line);
+  font-variant-numeric: tabular-nums;
+}
+.sk-compare-row:last-child { border-bottom: none; }
+.sk-compare-row .label {
+  color: var(--sk-ink-3);
+  font-size: 13px;
+}
+.sk-compare-row .value {
+  color: var(--sk-ink);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.sk-compare-row .value.dim {
+  color: var(--sk-ink-3);
+  font-weight: 400;
+}
+.sk-compare-row .value.on {
+  color: var(--sk-brand);
+  font-weight: 500;
+}
+
+/* Card stat footer — for compareStyle="card-footer".
+ * Small caption-style stat at the bottom of each slim card. Clearly
+ * secondary to the card's name + pitch + illustration — so it doesn't
+ * read as a contractual claim, just a "for this duration" preview.
+ */
+.sk-card-stat-footer {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--sk-line);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.sk-card-stat-footer .label {
+  color: var(--sk-ink-3);
+  font-size: 12px;
+}
+.sk-card-stat-footer .value {
+  color: var(--sk-ink);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+.sk-card-stat-footer .meta {
+  font-size: 11px;
+  color: var(--sk-ink-4);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+/* ── White-label iframe chrome (header + footer) ────────────────
+ * Simulates what a partner's embedded offer page looks like.
+ * Header: thin bar with the partner's logo on the left and a close X
+ *         on the right. Footer: small print disclosures.
+ */
+.sk-iframe-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 16px 64px;
+  border-bottom: 1px solid var(--sk-line);
+  background: var(--sk-surface);
+  flex-shrink: 0;
+}
+.sk-iframe-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--sk-ink);
+}
+.sk-iframe-logo-mark {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  background: var(--sk-ink);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  font-family: var(--sk-font);
+}
+.sk-iframe-close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  width: 32px; height: 32px;
+  border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--sk-ink-2);
+  cursor: pointer;
+  transition: background .12s ease, color .12s ease;
+}
+.sk-iframe-close:hover {
+  background: var(--sk-bg);
+  color: var(--sk-ink);
+}
+.sk-iframe-close svg {
+  display: block;
+}
+
+.sk-iframe-footer {
+  padding: 28px 64px 32px;
+  border-top: 1px solid var(--sk-line);
+  background: var(--sk-surface);
+  flex-shrink: 0;
+}
+.sk-iframe-footer p {
+  margin: 0 0 10px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--sk-ink-3);
+  letter-spacing: 0.005em;
+  max-width: none;
+}
+.sk-iframe-footer p:last-child { margin-bottom: 0; }
+.sk-iframe-footer p b {
+  color: var(--sk-ink-2);
+  font-weight: 500;
+}
+
+/* When chrome is on the .sk container becomes the column flexbox so the
+ * sticky CTA inside .sk-page still works (in the non-fullpage case). */
+.sk.sk--chromed {
+  display: flex; flex-direction: column;
+  min-height: 100%;
+}
+.sk.sk--chromed .sk-page { flex: 1; }
+.sk.sk--chromed.sk--ledger { background: var(--sk-surface); }
+.sk.sk--chromed.sk--ledger .sk-page { background: #FAFAF7; }
+
+/* ── Mobile layout (.sk--mobile) ────────────────────────────────
+ * Adapts the V1B Stats-out / B1 design to a phone-sized container.
+ * Single-column cards, smaller hero numerics, tighter padding, and
+ * the CTA stacks (summary above, full-width button below).
+ */
+.sk--mobile .sk-iframe-header {
+  padding: 14px 20px;
+}
+.sk--mobile .sk-iframe-logo {
+  font-size: 14px;
+}
+.sk--mobile .sk-iframe-logo-mark {
+  width: 22px; height: 22px;
+  font-size: 11px;
+  border-radius: 5px;
+}
+.sk--mobile .sk-iframe-close {
+  width: 32px; height: 32px;
+}
+.sk--mobile .sk-iframe-footer {
+  padding: 22px 20px 28px;
+}
+.sk--mobile .sk-iframe-footer p {
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+
+.sk--mobile .sk-page {
+  padding: 28px 20px 28px;
+  gap: 36px;
+  font-size: 14px;
+}
+
+.sk--mobile .sk-h1 {
+  font-size: 26px;
+  letter-spacing: -0.024em;
+}
+.sk--mobile .sk-lede {
+  font-size: 14px;
+}
+
+.sk--mobile .sk-step { gap: 14px; }
+.sk--mobile .sk-step-head {
+  flex-wrap: wrap;
+  padding-bottom: 14px;
+  gap: 10px;
+}
+.sk--mobile .sk-step-num {
+  width: 26px; height: 26px;
+  font-size: 12px;
+}
+.sk--mobile .sk-step-title {
+  font-size: 18px;
+  letter-spacing: -0.015em;
+}
+.sk--mobile .sk-step-sub {
+  width: 100%;
+  margin-left: 0 !important;
+  font-size: 12px;
+  order: 3;
+}
+
+/* Amount block — smaller hero numeric, slider stays comfortable */
+.sk--mobile .sk-amount {
+  display: flex; flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.sk--mobile .sk-amount-field .pre { font-size: 24px; }
+.sk--mobile .sk-amount-field input {
+  font-size: 40px;
+  width: 7ch;
+}
+.sk--mobile .sk-amount-field .suf {
+  padding-bottom: 6px;
+}
+.sk--mobile .sk-amount-cap {
+  text-align: left;
+  font-size: 11px;
+}
+
+.sk--mobile .sk-slider-axis {
+  font-size: 13px;
+}
+
+/* Cards: stack single-column */
+.sk--mobile .sk-twin {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.sk--mobile .sk-card--slim {
+  padding: 18px 18px 16px;
+  gap: 16px;
+}
+.sk--mobile .sk-card--slim .sk-card-name {
+  font-size: 19px;
+}
+.sk--mobile .sk-card--slim .sk-card-product-line {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+.sk--mobile .sk-card--slim .sk-card-pitch {
+  font-size: 13px;
+}
+.sk--mobile .sk-shape-flex-row { height: 56px; gap: 6px; }
+.sk--mobile .sk-shape-flex-bar { max-width: 22px; }
+.sk--mobile .sk-shape-flex-legend { font-size: 10.5px; }
+.sk--mobile .sk-shape-term-row { height: 56px; }
+.sk--mobile .sk-shape-cal { gap: 8px; }
+.sk--mobile .sk-shape-cal-days { height: 38px; max-width: 48px; }
+.sk--mobile .sk-shape-flex-amt { font-size: 10px; }
+.sk--mobile .sk-shape-flex-sales,
+.sk--mobile .sk-shape-flex-withheld { font-size: 9.5px; }
+.sk--mobile .sk-shape-flex--amts .sk-shape-flex-bars { height: 52px; }
+.sk--mobile .sk-shape-flex-day-label { font-size: 9px; }
+.sk--mobile .sk-shape-cap { font-size: 11px; }
+
+/* Step 3 cards stack */
+.sk--mobile .sk-dur-step {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.sk--mobile .sk-dur-card {
+  padding: 16px 18px;
+  gap: 12px;
+}
+.sk--mobile .sk-dur-card-name { font-size: 17px; }
+.sk--mobile .sk-dur-card-hold { font-size: 11.5px; }
+
+/* Plan separator + panel */
+.sk--mobile .sk-plan {
+  padding: 18px 18px 16px;
+  gap: 18px;
+}
+.sk--mobile .sk-plan-title { font-size: 17px; }
+.sk--mobile .sk-plan-sub  { font-size: 12px; }
+.sk--mobile .sk-plan-grid {
+  gap: 0;
+}
+.sk--mobile .sk-plan-item {
+  padding: 11px 0;
+}
+.sk--mobile .sk-plan-item .label { font-size: 13px; }
+.sk--mobile .sk-plan-item .value { font-size: 15px; }
+.sk--mobile .sk-plan-item.total {
+  margin-top: 4px;
+  padding-top: 14px;
+}
+.sk--mobile .sk-plan-item.total .value { font-size: 22px; }
+
+/* Stacked CTA — summary on top, full-width button below */
+.sk--mobile .sk-cta {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  padding: 16px;
+  bottom: 12px;
+}
+.sk--mobile .sk-cta-summary {
+  max-width: none;
+  font-size: 13px;
+}
+.sk--mobile .sk-cta-action {
+  align-items: stretch;
+  gap: 4px;
+}
+.sk--mobile .sk-cta-note {
+  text-align: center;
+}
+
+/* Mobile review: drop the numbered "Review your plan" step header and show
+ * the "Offer summary" header inside the panel instead — mirrors the desktop
+ * right-rail treatment. */
+.sk--mobile .sk-step:has(> .sk-review) > .sk-step-head { display: none; }
+.sk--mobile .sk-review .sk-plan::before {
+  content: "Offer summary";
+  display: block;
+  font-size: 18px; font-weight: 500; letter-spacing: -0.015em;
+  color: var(--sk-ink);
+}
+
+/* Mobile: the standalone CTA (the one carrying the "you'll borrow…" summary)
+ * sticks to the bottom of the screen while the steps scroll behind it. The
+ * merged rail CTA (inside .sk-rail-merged, no summary) is unaffected.
+ * It renders as a full-bleed bottom action bar flush to the phone's edge —
+ * a top hairline + soft lift instead of an inset floating pill. */
+.sk--mobile.sk--fullpage .sk-page > .sk-cta {
+  position: sticky;
+  bottom: 0;                            /* flush to the phone's bottom edge */
+  z-index: 6;
+  margin: 16px -20px 0;                 /* cancel the 20px .sk-page padding → full width */
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+  border-radius: 0;
+  border-width: 1.5px 0 0;              /* top hairline only */
+  box-shadow: 0 -6px 22px rgba(10, 10, 10, 0.07);
+}
+/* Condensed amount + fee summary inside the bottom bar (ctaSummary="amounts") */
+.sk--mobile .sk-cta-summary--amounts {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13.5px;
+  white-space: nowrap;
+  color: var(--sk-ink-2);
+}
+.sk--mobile .sk-cta-summary--amounts .lbl { color: var(--sk-ink-3); }
+.sk--mobile .sk-cta-summary--amounts .sep { color: var(--sk-ink-4); }
+.sk--mobile .sk-cta-summary--amounts b {
+  color: var(--sk-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.sk--mobile .sk-cta .sk-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 14px 18px;
+  font-size: 15px;
+}
+
+/* Powered-by smaller */
+.sk--mobile .sk-powered { font-size: 10px; }
+.sk--mobile .sk-powered img { height: 11px; }
+.sk-cta--rich {
+  align-items: stretch;
+  padding: 18px 22px;
+}
+.sk-cta-summary-stack {
+  display: flex; flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.sk-cta-summary-stack .line1 {
+  display: flex; align-items: baseline; flex-wrap: wrap;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--sk-ink);
+  font-variant-numeric: tabular-nums;
+}
+.sk-cta-summary-stack .line1 b {
+  font-weight: 500;
+}
+.sk-cta-summary-stack .line1 .sep {
+  color: var(--sk-ink-4);
+  font-weight: 400;
+}
+.sk-cta-summary-stack .line2 {
+  font-size: 13px;
+  color: var(--sk-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.sk-cta--rich .sk-btn {
+  align-self: center;
+  padding: 13px 22px;
+}
+
+/* Make the Flex card's .sk-shape-row taller-flexible so the new
+   illustration fits with its legend + amount labels. */
+.sk-shape-row { min-height: 36px; height: auto; }
+
+/* Dots — 52 evenly-spaced dots, all identical size. */
+.sk-shape-dots {
+  display: flex; align-items: center; gap: 3px;
+  height: 100%; width: 100%;
+  padding: 0 2px;
+}
+.sk-shape-dots span {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--sk-ink-2);
+  opacity: 0.55;
+}
+.sk-shape-dots span.month-marker {
+  height: 10px;
+  opacity: 0.9;
+}
+.sk-pipe .sk-shape-dots span { background: var(--sk-dark-ink-2); }
+
+/* Shared "term" wrapper — gives every Term variant the same vertical
+ * rhythm as the Flex illustration (legend + visual area + label row).
+ * The .sk-shape-row min-height absorbs the visual area; everything else
+ * grows naturally. */
+.sk-shape-term {
+  display: flex; flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  font-family: var(--sk-font);
+}
+.sk-shape-term.compact { gap: 0; }
+.sk-shape-term.compact .sk-shape-flex-legend { display: none; }
+.sk-shape-term-row {
+  display: flex; align-items: center;
+  height: 64px;
+  width: 100%;
+  padding: 0 4px;
+}
+
+/* Calendar — 6 weekly columns. Each column shows 7 day-bars; one
+ * (Thursday) is taller and brand-colored = the recurring payment day.
+ * Sits inside .sk-shape-term so it inherits the unified vertical rhythm.
+ */
+.sk-shape-cal {
+  display: flex; align-items: end;
+  gap: 12px;
+  width: 100%;
+  padding: 0 4px;
+}
+.sk-shape-cal-week {
+  display: flex; flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.sk-shape-cal-days {
+  display: flex; align-items: end; gap: 1.5px;
+  height: 44px;
+  width: 100%;
+  max-width: 60px;
+  margin: 0 auto;
+}
+.sk-shape-cal-days span {
+  flex: 1;
+  height: 5px;
+  background: var(--sk-line-strong);
+  border-radius: 1px;
+  opacity: 0.7;
+}
+.sk-shape-cal-days span.pay {
+  height: 100%;
+  background: var(--sk-brand);
+  border-radius: 1.5px;
+  opacity: 1;
+}
+.sk-pipe .sk-shape-cal-days span { background: var(--sk-dark-line-2); }
+
+/* Equation — typographic illustration: "$526 × 52 wk = $27,460" */
+.sk-shape-eq {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px;
+  height: 100%; width: 100%;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sk-shape-eq .num {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  color: var(--sk-ink);
+}
+.sk-shape-eq .op {
+  font-size: 13px;
+  color: var(--sk-ink-3);
+  font-weight: 400;
+}
+.sk-pipe .sk-shape-eq .num { color: var(--sk-dark-ink); }
+.sk-pipe .sk-shape-eq .op { color: var(--sk-dark-ink-3); }
+
+/* Ticks — a clean horizontal timeline with month labels. */
+.sk-shape-ticks {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.sk-shape-ticks-bar {
+  position: absolute; left: 0; right: 0; top: 50%;
+  height: 1px; background: var(--sk-line-strong);
+}
+.sk-shape-ticks-marks {
+  position: absolute; inset: 0;
+  display: flex; align-items: center;
+}
+.sk-shape-ticks-marks span {
+  flex: 1;
+  height: 6px;
+  background: var(--sk-ink-2);
+  margin-left: -0.5px;
+  opacity: 0.5;
+}
+.sk-shape-ticks-marks span.major {
+  height: 14px;
+  width: 2px;
+  flex: 0 0 2px;
+  background: var(--sk-ink);
+  opacity: 1;
+  border-radius: 1px;
+}
+.sk-pipe .sk-shape-ticks-bar { background: var(--sk-dark-line-2); }
+.sk-pipe .sk-shape-ticks-marks span { background: var(--sk-dark-ink-2); }
+.sk-pipe .sk-shape-ticks-marks span.major { background: var(--sk-dark-ink); }
+
+/* Term illustration — "weeks" variant: stacked rows, week label on the
+ * left and the bi-weekly payment amount on the right. */
+.sk-shape-weeklist { display: flex; flex-direction: column; width: 100%; }
+.sk-shape-weekrow {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  padding: 9px 0; font-size: 13.5px; font-variant-numeric: tabular-nums;
+  border-bottom: 1.5px solid var(--sk-line-strong);
+}
+/* Divider under every row except the one before the ⋮ (Week 3). */
+.sk-shape-weekrow:has(+ .sk-shape-weekrow--ell) { border-bottom: none; }
+.sk-shape-weekrow .wk { color: var(--sk-ink-2); }
+.sk-shape-weekrow .amt { color: var(--sk-ink); font-weight: 600; }
+.sk-shape-weekrow--ell { padding: 8px 0; justify-content: flex-start; align-items: center; }
+.sk-shape-weekrow--ell .wk { color: var(--sk-ink-3); line-height: 1; letter-spacing: 1px; display: inline-block; transform: translateY(-4px); }
+
+/* Right-rail layout (V1bStatsOut layout="rail", desktop) */
+.sk-cols { display: grid; grid-template-columns: minmax(0,1fr) 440px; gap: 40px; align-items: start; }
+.sk-cols-main { display: flex; flex-direction: column; gap: 48px; min-width: 0; }
+.sk-cols-rail { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 24px; }
+.sk--mobile .sk-cols { display: flex; flex-direction: column; gap: 48px; }
+/* In the rail: drop the "Step 4" header and stack the CTA (summary above
+ * the button) so it fits the narrow column. */
+.sk-cols-rail .sk-step-head { display: none; }
+.sk-cols-rail .sk-cta { flex-direction: column; align-items: stretch; gap: 14px; border: 0; box-shadow: none; }
+.sk-cols-rail .sk-cta-action { align-items: center; }
+.sk-rail-support { text-align: center; font-size: 13px; color: var(--sk-ink-3); margin: 0; }
+.sk-rail-support .sk-link {
+  background: none; border: 0; font: inherit; padding: 0; cursor: pointer;
+  color: var(--sk-brand); text-decoration: underline; text-underline-offset: 2px;
+}
+.sk-cols-rail .sk-cta .sk-btn { width: 100%; justify-content: center; }
+/* Borderless, flush offer summary in the rail, with a "Offer summary"
+ * header (the Step 4 header is hidden here) and a centered CTA note. */
+.sk-cols-rail .sk-plan { border: 0; }
+.sk-cols-rail .sk-plan::before {
+  content: "Offer summary";
+  font-size: 18px; font-weight: 500; letter-spacing: -0.015em; color: var(--sk-ink);
+}
+.sk-cols-rail .sk-cta-note { text-align: center; }
+
+/* Narrow desktop / embedded panes: the wide rail (440px) + generous side
+ * padding (144px) don't both fit much under ~1100px, so stack the columns
+ * and trim the side padding so the main content never gets crushed. */
+@media (max-width: 1100px) {
+  .sk-page, .sk--editorial .sk-page { padding-left: 56px; padding-right: 56px; }
+  .sk-cols { grid-template-columns: 1fr; gap: 36px; }
+  .sk-cols-rail { position: static; }
+}

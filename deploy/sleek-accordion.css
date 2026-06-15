@@ -1,0 +1,249 @@
+/* sleek-accordion.css — collapsible-step ("wizard") treatment for the
+ * Flex vs Term offer. Built on the same .sk / Ledger tokens as sleek.css.
+ *
+ * Pattern:
+ *   • active step   — expanded card: number badge + title, then the step
+ *                     body and a full-width Continue button.
+ *   • done step     — collapsed row: check badge + title + chosen-value
+ *                     summary, with an Edit button to reopen it.
+ *   • upcoming step  — dimmed collapsed row: hollow number + muted title.
+ */
+
+.sk-acc {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Step card ─────────────────────────────────────────────────── */
+.sk-acc-step {
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: 16px;
+  transition: border-color .15s ease, background .15s ease, box-shadow .2s ease;
+}
+.sk-acc-step.is-active {
+  border-color: var(--sk-line-strong);
+  box-shadow: 0 1px 2px rgba(10, 10, 10, 0.04), 0 10px 28px rgba(10, 10, 10, 0.05);
+}
+.sk-acc-step.is-upcoming {
+  background: transparent;
+}
+
+/* ── Header row ────────────────────────────────────────────────── */
+.sk-acc-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 24px;
+}
+.sk-acc-step.is-active > .sk-acc-head {
+  padding-bottom: 0;
+}
+.sk-acc-step.is-done > .sk-acc-head,
+.sk-acc-step.is-upcoming > .sk-acc-head {
+  cursor: pointer;
+}
+.sk-acc-step.is-upcoming > .sk-acc-head:hover .sk-acc-title {
+  color: var(--sk-ink-2);
+}
+.sk-acc-step.is-upcoming > .sk-acc-head:hover .sk-acc-num {
+  border-color: var(--sk-ink-3);
+  color: var(--sk-ink-3);
+}
+
+.sk-acc-num {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.sk-acc-step.is-active .sk-acc-num {
+  background: var(--sk-ink);
+  color: #fff;
+}
+.sk-acc-step.is-done .sk-acc-num {
+  background: var(--sk-brand);
+  color: var(--sk-brand-on);
+}
+.sk-acc-step.is-upcoming .sk-acc-num {
+  background: transparent;
+  color: var(--sk-ink-4);
+  border: 1.5px solid var(--sk-line-strong);
+}
+.sk-acc-num svg { display: block; }
+
+.sk-acc-headtext {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.sk-acc-title {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  line-height: 1.2;
+  margin: 0;
+}
+.sk-acc-step.is-upcoming .sk-acc-title {
+  color: var(--sk-ink-4);
+}
+.sk-acc-summary {
+  font-size: 14px;
+  color: var(--sk-ink-3);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.005em;
+}
+/* Collapsed (done) step: flip the hierarchy so the CHOSEN VALUE leads and
+ * the step name reads as a small eyebrow label above it. */
+.sk-acc-step.is-done .sk-acc-headtext { gap: 3px; }
+.sk-acc-step.is-done .sk-acc-title {
+  order: 1;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sk-ink-3);
+  line-height: 1.1;
+}
+.sk-acc-step.is-done .sk-acc-summary {
+  order: 2;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.2;
+  color: var(--sk-ink);
+}
+
+/* Edit button on a completed step */
+.sk-acc-edit {
+  appearance: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--sk-ink-2);
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line-strong);
+  border-radius: 999px;
+  padding: 7px 14px;
+  transition: background .12s ease, color .12s ease, border-color .12s ease;
+}
+.sk-acc-edit:hover {
+  background: var(--sk-bg);
+  color: var(--sk-ink);
+  border-color: var(--sk-ink);
+}
+.sk-acc-edit svg { display: block; }
+
+/* ── Expanded body ─────────────────────────────────────────────── */
+.sk-acc-body {
+  padding: 18px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: skAccIn .24s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk-acc-body { animation: none; }
+}
+@keyframes skAccIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* The amount control carries its own top padding — trim the body's. */
+.sk-acc-body > .sk-amount-wrap { margin-top: -8px; }
+
+/* Duration step is reused whole (SkDurationStep) — its own header is
+ * redundant inside the accordion, so hide it and drop the section gap. */
+.sk-acc-body .sk-step { gap: 0; }
+.sk-acc-body .sk-step-head { display: none; }
+
+/* Plan panel sits flush inside the review step. */
+.sk-acc-body .sk-card-block { gap: 0; }
+
+/* ── Step 3 · live cost recap ──────────────────────────────────────
+ * Surfaces the selected duration's repayment rate + capital fee right
+ * inside the duration step, so merchants see how the duration affects
+ * cost without bouncing to the Review step. Updates as the pick changes. */
+.sk-acc-durfacts {
+  border: 1px solid var(--sk-line);
+  border-radius: 12px;
+  background: var(--sk-bg);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sk-acc-durfacts-cap {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sk-ink-3);
+}
+.sk-acc-durfacts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sk-acc-durfacts .row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+.sk-acc-durfacts .l {
+  font-size: 14px;
+  color: var(--sk-ink-2);
+}
+.sk-acc-durfacts .v {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--sk-ink);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.sk-acc-durfacts .v .pct {
+  font-weight: 400;
+  color: var(--sk-ink-3);
+}
+
+.sk-acc-foot {
+  display: flex;
+}
+.sk-acc-continue {
+  width: 100%;
+  justify-content: center;
+  padding: 14px 22px;
+  font-size: 15px;
+}
+
+/* Powered-by sits below the accordion. */
+
+/* ── Mobile ────────────────────────────────────────────────────── */
+.sk--mobile .sk-acc { gap: 12px; }
+.sk--mobile .sk-acc-step { border-radius: 14px; }
+.sk--mobile .sk-acc-head { padding: 18px; gap: 13px; }
+.sk--mobile .sk-acc-num { width: 26px; height: 26px; font-size: 12px; }
+.sk--mobile .sk-acc-title { font-size: 17px; }
+.sk--mobile .sk-acc-step.is-done .sk-acc-title { font-size: 11px; }
+.sk--mobile .sk-acc-summary { font-size: 13px; }
+.sk--mobile .sk-acc-step.is-done .sk-acc-summary { font-size: 16px; }
+.sk--mobile .sk-acc-edit { padding: 6px 12px; font-size: 12px; }
+.sk--mobile .sk-acc-body { padding: 14px 18px 20px; gap: 20px; }

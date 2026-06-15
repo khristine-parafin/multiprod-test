@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Same page widget → Collapsible steps</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+  <!-- shared tokens -->
+  <link rel="stylesheet" href="davinci/colors_and_type.css">
+  <!-- entry screen: mercury dashboard + comparison widget -->
+  <link rel="stylesheet" href="offer-mercury.css">
+  <link rel="stylesheet" href="mof-widgets.css">
+  <link rel="stylesheet" href="mof-dashboard.css">
+  <link rel="stylesheet" href="mof-compare.css">
+  <!-- destination screen: collapsible-step (accordion) offer -->
+  <link rel="stylesheet" href="sleek.css">
+  <link rel="stylesheet" href="sleek-single.css">
+  <link rel="stylesheet" href="sleek-accordion.css">
+
+  <style>
+    html, body, #root { height: 100%; }
+    body {
+      margin: 0;
+      background: #F4F2EC;
+      font-family: 'Inter Tight', system-ui, sans-serif;
+    }
+
+    /* Use Inter across the embedded dashboard + offer widgets */
+    .mof { --mof-display: 'Inter', system-ui, sans-serif; --mof-text: 'Inter', system-ui, sans-serif; }
+
+    /* Font-family override knob (matches the standalone collapsible page) */
+    html[data-font="inter-tight"] .sk { --sk-font: 'Inter Tight', 'Inter', system-ui, sans-serif; }
+    html[data-font="inter"]       .sk { --sk-font: 'Inter', system-ui, sans-serif; }
+    html[data-font="geist"]       .sk { --sk-font: 'Geist', 'Inter Tight', system-ui, sans-serif; }
+
+    /* ── Flow stage: two full-screen views that cross-fade + slide ── */
+    .phone-stage {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: #E7E5DF; padding: 20px; box-sizing: border-box;
+    }
+    .phone {
+      position: relative;
+      width: 393px;
+      max-width: 100%;
+      height: min(852px, 100%);
+      border-radius: 44px;
+      overflow: hidden;
+      background: #FAFAF7;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.08);
+    }
+    .flow-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #F4F2EC;
+    }
+    .flow-screen {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .flow-screen--dash  { background: #F4F2EC; animation: flowInLeft .4s cubic-bezier(.22,.61,.36,1); }
+    .flow-screen--offer { background: #FAFAF7; animation: flowInRight .4s cubic-bezier(.22,.61,.36,1); }
+
+    /* Entrance animations end at the visible base state (opacity:1, no
+     * transform), so a frozen/interrupted run can never hold a screen
+     * hidden. */
+    @keyframes flowInRight { from { transform: translateX(3.5%); } to { transform: none; } }
+    @keyframes flowInLeft  { from { transform: translateX(-3.5%); } to { transform: none; } }
+
+    /* offer page fills the full viewport width */
+    .flow-screen--offer .sk-page {
+      max-width: none;
+      width: 100%;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .flow-screen { animation: none; }
+    }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <template id="__bundler_thumbnail">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" rx="20" fill="#5A4FD6"/>
+      <rect x="30" y="44" width="40" height="26" rx="5" fill="#fff"/>
+      <path d="M50 44v-6a10 10 0 0 1 20 0" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="50" cy="57" r="4.5" fill="#5A4FD6"/>
+    </svg>
+  </template>
+  <div id="root"></div>
+
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="offer-shared.jsx"></script>
+  <script type="text/babel" src="v1b-stats.jsx"></script>
+  <script type="text/babel" src="flex-offer.jsx"></script>
+  <script type="text/babel" src="mof-widgets.jsx"></script>
+  <script type="text/babel" src="mof-compare.jsx"></script>
+  <script type="text/babel" src="sleek-shared.jsx"></script>
+  <script type="text/babel" src="sleek-v1b-stats-out.jsx"></script>
+  <script type="text/babel" src="sleek-accordion.jsx"></script>
+
+  <script type="text/babel" data-presets="env,react">
+    const { useState, useEffect, useRef } = React;
+
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "brand": "#5A4FD6",
+      "partner": "Harbor",
+      "amount": 50000,
+      "recommend": "none",
+      "naming": "product",
+      "termShape": "weeks",
+      "font": "inter-tight"
+    }/*EDITMODE-END*/;
+
+    function App() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+      // 'dashboard' (the single-amount widget on the partner's page) →
+      // 'offer' (the collapsible-step accordion flow)
+      const [view, setView] = useState('dashboard');
+      const [choice, setChoice] = useState('flex');
+      const offerRef = useRef(null);
+
+      // One brand drives both design systems
+      useEffect(() => {
+        const brand = t.brand || '#5A4FD6';
+        const root = document.documentElement;
+        root.style.setProperty('--sk-brand', brand);
+        root.style.setProperty('--sk-brand-hover', mix(brand, '#FFFFFF', 0.12));
+        root.style.setProperty('--sk-brand-on', readableOn(brand));
+      }, [t.brand]);
+
+      useEffect(() => {
+        document.documentElement.setAttribute('data-font', t.font);
+      }, [t.font]);
+
+      const goOffer = () => {
+        setChoice('flex');                 // open the offer on Flex by default
+        setView('offer');
+        if (offerRef.current) offerRef.current.scrollTop = 0;
+      };
+      const goBack = () => setView('dashboard');
+
+      const recommend = t.recommend === 'none' ? null : t.recommend;
+
+      return (
+        <React.Fragment>
+          <div className="phone-stage">
+            <div className="phone">
+              <div className="flow-stage">
+            {/* ── Screen 1 · the "same page" (side-by-side columns) widget in the partner dashboard ── */}
+            {view === 'dashboard' &&
+              <div className="flow-screen flow-screen--dash">
+                <MofDashboard theme="light" partner={t.partner} mobile>
+                  <div className="mofdash-embed" style={{ maxWidth: 820 }}>
+                    <CmpColumns onCta={goOffer} />
+                  </div>
+                </MofDashboard>
+              </div>
+            }
+
+            {/* ── Screen 2 · the collapsible-step (accordion) offer flow ── */}
+            {view === 'offer' &&
+              <div className="flow-screen flow-screen--offer" ref={offerRef}>
+                <SkAccordionOffer
+                  mobile
+                  amount={t.amount}
+                  setAmount={(v) => setTweak('amount', v)}
+                  choice={choice} setChoice={setChoice}
+                  recommend={recommend}
+                  termShapeStyle={t.termShape}
+                  naming={t.naming}
+                  partnerName={t.partner}
+                  chrome
+                  initialStep={0}
+                  onClose={goBack}
+                />
+              </div>
+            }
+              </div>
+            </div>
+          </div>
+
+          <TweaksPanel title="Tweaks">
+            <TweakSection label="Flow">
+              <TweakRadio
+                label="Showing"
+                value={view}
+                options={[
+                  { label: 'Widget', value: 'dashboard' },
+                  { label: 'Offer',  value: 'offer' },
+                ]}
+                onChange={(v) => v === 'offer' ? goOffer() : goBack()}
+              />
+            </TweakSection>
+
+            <TweakSection label="Offer">
+              <TweakSlider
+                label="Approved amount"
+                value={t.amount}
+                min={5000} max={50000} step={500}
+                onChange={(v) => setTweak('amount', v)}
+              />
+              <TweakRadio
+                label="Recommendation"
+                value={t.recommend}
+                options={[
+                  { label: 'None', value: 'none' },
+                  { label: 'Flex', value: 'flex' },
+                  { label: 'Term', value: 'term' },
+                ]}
+                onChange={(v) => setTweak('recommend', v)}
+              />
+            </TweakSection>
+
+            <TweakSection label="Naming">
+              <TweakRadio
+                label="Framing"
+                value={t.naming}
+                options={[
+                  { label: 'Flex / Term',      value: 'product' },
+                  { label: 'Flexible / Fixed', value: 'concept' },
+                ]}
+                onChange={(v) => setTweak('naming', v)}
+              />
+            </TweakSection>
+
+            <TweakSection label="Term illustration">
+              <TweakSelect
+                label="Style"
+                value={t.termShape}
+                options={[
+                  { label: 'Weeks (default)', value: 'weeks' },
+                  { label: 'Calendar', value: 'calendar' },
+                  { label: 'Dots',     value: 'dots' },
+                  { label: 'Equation', value: 'equation' },
+                  { label: 'Ticks',    value: 'ticks' },
+                  { label: 'Bars',     value: 'bars' },
+                ]}
+                onChange={(v) => setTweak('termShape', v)}
+              />
+            </TweakSection>
+
+            <TweakSection label="Typography">
+              <TweakSelect
+                label="Body font"
+                value={t.font}
+                options={[
+                  { label: 'Inter Tight (default)', value: 'inter-tight' },
+                  { label: 'Inter',                  value: 'inter' },
+                  { label: 'Geist',                  value: 'geist' },
+                ]}
+                onChange={(v) => setTweak('font', v)}
+              />
+            </TweakSection>
+
+            <TweakSection label="Brand">
+              <TweakColor
+                label="Brand color"
+                value={t.brand}
+                options={['#5A4FD6', '#2A6FDB', '#4F46E5', '#1B5E20', '#B45309', '#0F172A']}
+                onChange={(v) => setTweak('brand', v)}
+              />
+              <TweakText
+                label="Partner name"
+                value={t.partner}
+                onChange={(v) => setTweak('partner', v)}
+              />
+            </TweakSection>
+          </TweaksPanel>
+        </React.Fragment>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+
+    /* Color helpers — hover lift + on-brand text contrast. */
+    function hexToRgb(h) {
+      const s = String(h).replace('#', '');
+      const v = s.length === 3 ? s.split('').map(c => c + c).join('') : s;
+      const n = parseInt(v, 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+    function rgbToHex(r, g, b) {
+      return '#' + [r, g, b].map(x =>
+        Math.max(0, Math.min(255, Math.round(x))).toString(16).padStart(2, '0')
+      ).join('');
+    }
+    function mix(a, b, t) {
+      const [ar, ag, ab] = hexToRgb(a);
+      const [br, bg, bb] = hexToRgb(b);
+      return rgbToHex(ar + (br - ar) * t, ag + (bg - ag) * t, ab + (bb - ab) * t);
+    }
+    function relLum([r, g, b]) {
+      const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+      return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    }
+    function readableOn(hex) {
+      return relLum(hexToRgb(hex)) > 0.55 ? '#0A0A0A' : '#FFFFFF';
+    }
+  </script>
+</body>
+</html>

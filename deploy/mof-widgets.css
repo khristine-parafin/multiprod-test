@@ -1,0 +1,200 @@
+/* mof-widgets.css — three Mercury-style capital widgets:
+ *   combined (both offers, one CTA), Flex-only, Term-only.
+ * Reuses the .mof tokens + atoms from offer-mercury.css (load that first).
+ * Everything here is scoped under .mof. */
+
+/* Dashboard stage the widgets sit in (partner Capital area) */
+.mofw-stage {
+  height: 100%;
+  padding: 32px 34px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.mof[data-theme="light"] .mofw-stage { background: #ECEAE3; }
+.mofw-stage-head { display: flex; flex-direction: column; gap: 4px; }
+.mofw-stage-title {
+  font-family: var(--mof-display);
+  font-size: 19px; font-weight: 500; letter-spacing: -0.01em; color: var(--mof-ink);
+}
+.mofw-stage-sub { font-size: 13.5px; color: var(--mof-ink-2); }
+.mofw-row { display: flex; gap: 18px; flex-wrap: wrap; align-items: stretch; }
+.mof--mobile .mofw-row { flex-direction: column; }
+
+/* ── Shared card shell ─────────────────────────────────────── */
+.mofw {
+  background: var(--mof-surface);
+  border: 1px solid var(--mof-line);
+  border-radius: 18px;
+  padding: 24px 24px 22px;
+  box-shadow: var(--mof-shadow);
+  display: flex; flex-direction: column; gap: 18px;
+}
+.mofw-solo { width: 392px; max-width: 100%; }
+.mofw-solo.mofw--wide { width: 100%; }
+.mof--mobile .mofw-solo { width: 100%; }
+
+.mofw-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.mofw-fig {
+  font-family: var(--mof-display);
+  font-size: 36px; font-weight: 500; letter-spacing: -0.03em; line-height: 1;
+  color: var(--mof-ink); font-variant-numeric: tabular-nums;
+}
+.mofw-fig .pre { font-size: 15px; color: var(--mof-ink-3); font-weight: 500; letter-spacing: 0; margin-right: 5px; }
+.mofw-desc { font-size: 14px; line-height: 1.5; color: var(--mof-ink-2); margin: 0; }
+.mofw-desc b { color: var(--mof-ink); font-weight: 600; }
+
+/* Key mechanic chip (percentage vs fixed) */
+.mofw-mech {
+  display: inline-flex; align-items: center; gap: 8px;
+  align-self: flex-start;
+  white-space: nowrap;
+  font-size: 13px; color: var(--mof-ink-2);
+  background: var(--mof-surface-2);
+  border: 1px solid var(--mof-line);
+  border-radius: 9px; padding: 8px 13px;
+  font-variant-numeric: tabular-nums;
+}
+.mofw-mech b { color: var(--mof-ink); font-weight: 600; }
+
+/* ── Shared benefits list ──────────────────────────────────── */
+.mofw-benefits {
+  list-style: none; margin: 0; padding: 16px 0 0;
+  border-top: 1px solid var(--mof-line);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.mofw-benefits li {
+  display: flex; align-items: flex-start; gap: 11px;
+  font-size: 13.5px; line-height: 1.45; color: var(--mof-ink-2);
+}
+.mofw-benefits b { color: var(--mof-ink); font-weight: 600; }
+.mofw-bic {
+  flex-shrink: 0; width: 27px; height: 27px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--mof-accent-soft); color: var(--mof-accent);
+  margin-top: -1px;
+}
+.mofw-bic svg { width: 15px; height: 15px; }
+
+/* ── Footer (powered-by + expiry) ──────────────────────────── */
+.mofw-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-top: 2px;
+}
+.mofw-poweredby {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--mof-ink-3);
+}
+.mofw-poweredby img { height: 12px; opacity: 0.6; }
+.mof[data-theme="dark"] .mofw-poweredby img { filter: invert(1) brightness(1.7); opacity: 0.55; }
+.mofw-expiry { font-size: 12px; color: var(--mof-ink-3); font-variant-numeric: tabular-nums; }
+
+/* ── Combined widget (both offers, one CTA) ────────────────── */
+.mofw-combo { width: 496px; max-width: 100%; }
+.mof--mobile .mofw-combo { width: 100%; }
+.mofw-combo-eyebrow {
+  display: block;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--mof-accent);
+}
+.mofw-combo-amount {
+  display: block;
+  font-family: var(--mof-display);
+  font-size: 40px; font-weight: 500; letter-spacing: -0.03em; line-height: 1;
+  color: var(--mof-ink); font-variant-numeric: tabular-nums;
+  margin: 5px 0 0;
+}
+.mofw-combo-amount .pre { font-size: 16px; color: var(--mof-ink-3); font-weight: 500; letter-spacing: 0; margin-right: 6px; }
+.mofw-combo-title {
+  font-family: var(--mof-display);
+  font-size: 16px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2;
+  margin: 12px 0 0; color: var(--mof-ink);
+}
+.mofw-combo-sub {
+  font-size: 14px; line-height: 1.5; color: var(--mof-ink-2);
+  margin: 5px 0 0; max-width: 48ch;
+}
+.mofw-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+.mof--mobile .mofw-opts { grid-template-columns: 1fr; }
+.mofw-opt {
+  border: 1px solid var(--mof-line); border-radius: 13px;
+  padding: 16px 16px 15px; background: var(--mof-surface);
+  display: flex; flex-direction: column; gap: 9px;
+}
+.mofw-opt-headgroup { display: flex; flex-direction: column; gap: 3px; }
+.mofw-opt-eyebrow {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--mof-accent);
+}
+.mofw-opt-lead {
+  font-family: var(--mof-display);
+  font-size: 22px; font-weight: 500; letter-spacing: -0.018em; line-height: 1.05;
+  color: var(--mof-ink);
+}
+.mofw-opt-name {
+  display: flex; align-items: center; gap: 9px;
+  font-family: var(--mof-display);
+  font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--mof-ink);
+}
+.mofw-opt-max {
+  font-size: 14px; font-weight: 500; letter-spacing: 0; color: var(--mof-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.mofw-opt-max .pre { font-size: 14px; color: var(--mof-ink-3); font-weight: 500; margin-right: 4px; }
+/* option header row — name/lead on the left, "Up to $X" pill on the right
+ * (combined widget). */
+.mofw-opt-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.mofw-opt-pill {
+  flex-shrink: 0; align-self: flex-start;
+  font-size: 12px; font-weight: 600; color: var(--mof-ink-2);
+  background: var(--mof-surface-2); border: 1px solid var(--mof-line);
+  border-radius: 999px; padding: 5px 11px; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+/* per-product variant — bigger amount inside each box, no pill, no hero amount */
+.mofw-opt-bigamt {
+  font-family: var(--mof-display);
+  font-size: 25px; font-weight: 500; letter-spacing: -0.02em;
+  color: var(--mof-ink); font-variant-numeric: tabular-nums;
+}
+.mofw-opt-bigamt .pre { font-size: 14px; color: var(--mof-ink-3); font-weight: 500; letter-spacing: 0; margin-right: 5px; }
+.mofw-combo--per .mofw-combo-title { margin-top: 0; }
+.mofw-opt-desc { font-size: 12.5px; line-height: 1.45; color: var(--mof-ink-2); margin: 0; }
+.mofw-opt-desc b { color: var(--mof-ink); font-weight: 600; }
+.mofw-opt-meta {
+  margin-top: auto; padding-top: 4px;
+  font-size: 12px; color: var(--mof-ink-3); font-variant-numeric: tabular-nums;
+}
+.mofw-opt-meta b { color: var(--mof-ink-2); font-weight: 600; }
+
+/* Wide (embedded / dashboard) combined widget — make use of the horizontal
+ * space: lay the value props out as a 4-across row instead of a vertical
+ * list, and let the intro copy run wider. */
+.mofw--wide .mofw-combo-sub { max-width: none; }
+/* Per-section CTA inside an option (combined widget, ctaPerSection) —
+ * pinned to the bottom so both option buttons align. */
+.mofw-opt-cta { margin-top: 6px; }
+
+/* ── Universal value-props band (single-product, shared props) ── */
+.mofw-band {
+  background: var(--mof-surface);
+  border: 1px solid var(--mof-line);
+  border-radius: 16px;
+  padding: 18px 22px 16px;
+  box-shadow: var(--mof-shadow);
+  display: flex; flex-direction: column; gap: 15px;
+}
+.mofw-band-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--mof-ink-3);
+}
+.mofw-band-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.mof--mobile .mofw-band-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+.mofw-band-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; line-height: 1.4; color: var(--mof-ink-2);
+}
+.mofw-band-item b { color: var(--mof-ink); font-weight: 600; }
+.mofw-band-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-top: 14px; border-top: 1px solid var(--mof-line);
+}

@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Capital offer flows · test hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    :root {
+      --bg: #E7E5DF;
+      --panel: #FBFAF7;
+      --ink: #1A1917;
+      --muted: #6F6B63;
+      --faint: #98938A;
+      --line: #DEDBD2;
+      --brand: #5A4FD6;
+      --brand-tint: #EEECFB;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: 'Inter Tight', system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      display: grid;
+      grid-template-columns: 318px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+    body.rail-collapsed { grid-template-columns: 64px 1fr; }
+
+    /* ── Sidebar ── */
+    .railzone {
+      position: relative;
+      height: 100%;
+      min-width: 0;
+      overflow: hidden;
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+    }
+    /* Full sidebar — shown only when expanded. */
+    .rail {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 318px;
+      min-width: 0;
+      background: var(--panel);
+    }
+    body:not(.rail-collapsed) .rail { display: flex; }
+    .rail-list { flex: 1 1 auto; }
+    .rail-collapse {
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      z-index: 2;
+    }
+    .rail-collapse:hover { color: var(--ink); border-color: #C9C5BB; }
+
+    /* Thin mini rail — numbered shortcuts, shown when collapsed. */
+    .minirail {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 64px;
+      height: 100%;
+      padding: 14px 0 12px;
+    }
+    body.rail-collapsed .minirail { display: flex; }
+    .mini-expand {
+      flex: 0 0 auto;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border: 0; border-radius: 10px;
+      background: transparent; color: var(--muted); cursor: pointer;
+      font-size: 17px; line-height: 1;
+    }
+    .mini-expand:hover { color: var(--ink); background: rgba(255,255,255,.06); }
+    .mini-div { flex: 0 0 auto; width: 28px; height: 1px; background: var(--line); margin: 2px 0; }
+    .mini-gap { flex: 0 0 auto; height: 11px; }
+    .mini-nums {
+      flex: 1 1 auto;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      width: 100%;
+      overflow-y: auto;
+      padding: 2px 0;
+    }
+    .mini-num {
+      flex: 0 0 auto;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--line); border-radius: 50%;
+      background: #fff; color: var(--muted); cursor: pointer;
+      font: 600 15px/1 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .mini-num:hover { color: var(--ink); border-color: #C9C5BB; }
+    .mini-num.is-active { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .rail-head {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .rail-eyebrow {
+      font: 500 11px/1 'JetBrains Mono', monospace;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .rail-title {
+      margin: 9px 0 0;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .rail-sub {
+      margin: 6px 0 0;
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+    .rail-tabs {
+      flex: 1 1 auto;
+      display: flex;
+      gap: 4px;
+      padding: 3px;
+      background: #EBE9E2;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+    .rail-tab {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      border-radius: 7px;
+      padding: 8px 10px;
+      font: 600 13px/1 'Inter Tight', sans-serif;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background .12s ease, color .12s ease;
+    }
+    .rail-tab:hover { color: var(--ink); }
+    .rail-tab.is-active {
+      background: var(--panel);
+      color: var(--ink);
+      box-shadow: 0 1px 2px rgba(0,0,0,.07);
+    }
+
+    /* ── Dimensions legend ── */
+    .legend {
+      padding: 14px 18px 4px;
+      border-bottom: 1px solid var(--line);
+    }
+    .legend-title {
+      font: 500 10px/1 'JetBrains Mono', monospace;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 10px;
+    }
+    .legend-row {
+      display: flex;
+      gap: 9px;
+      align-items: baseline;
+      margin-bottom: 9px;
+    }
+    .legend-key {
+      flex: 0 0 78px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .legend-val {
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+
+    .rail-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px 24px;
+    }
+    .grp {
+      margin-top: 22px;
+    }
+    .grp:first-child { margin-top: 8px; }
+    .grp-head {
+      padding: 4px 10px 0;
+    }
+    .grp-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      color: var(--ink);
+      padding-bottom: 8px;
+    }
+    .grp-tag {
+      font: 500 10px/1 'JetBrains Mono', monospace;
+      letter-spacing: .04em;
+      color: var(--brand);
+      background: var(--brand-tint);
+      border-radius: 5px;
+      padding: 3px 6px;
+    }
+    .grp-desc {
+      font-size: 11.5px;
+      line-height: 1.4;
+      color: var(--muted);
+      margin: 5px 0 9px;
+      padding: 0 10px;
+    }
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      text-align: left;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: transparent;
+      padding: 11px 11px;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--ink);
+      transition: background .12s ease, border-color .12s ease;
+    }
+    .nav-item:hover { background: #F2F0EA; }
+    .nav-item.is-active {
+      background: var(--brand-tint);
+      border-color: color-mix(in srgb, var(--brand) 30%, transparent);
+    }
+    .nav-item.is-active .ni-title { color: var(--brand); }
+    .ni-num {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #E7E5DD;
+      color: var(--faint);
+      font: 600 11px/1 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .nav-item.is-active .ni-num {
+      background: var(--brand);
+      color: #fff;
+    }
+    .ni-title {
+      flex: 1;
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: -.005em;
+    }
+    .ni-layout {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      font: 500 10px/1 'JetBrains Mono', monospace;
+      letter-spacing: .03em;
+      color: var(--faint);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 4px 6px;
+      background: #FFF;
+    }
+    .nav-item.is-active .ni-layout {
+      color: var(--brand);
+      border-color: color-mix(in srgb, var(--brand) 30%, transparent);
+    }
+    .ni-flowtag {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      font: 500 10px/1 'JetBrains Mono', monospace;
+      letter-spacing: .03em;
+      color: var(--brand);
+      background: var(--brand-tint);
+      border: 1px solid color-mix(in srgb, var(--brand) 22%, transparent);
+      border-radius: 5px;
+      padding: 4px 6px;
+    }
+
+    /* ── Dark sidebar chrome ──────────────────────────────────────────
+     * The sidebar is deliberately dark so it reads as the testing tool,
+     * clearly separate from the light prototype canvas being tested.
+     * Redefine the palette for the whole sidebar subtree, then fix the
+     * few hardcoded light surfaces. */
+    .railzone {
+      --panel: #383B45;
+      --ink: #F4F3F1;
+      --muted: #CECCD6;
+      --faint: #A6A4AF;
+      --line: #4A4D57;
+      --brand-tint: #403B6B;
+      color: var(--ink);
+    }
+    .railzone .rail-collapse,
+    .railzone .mini-num,
+    .railzone .rail-foot .open-btn {
+      background: #45485273;
+    }
+    .railzone .rail-collapse:hover,
+    .railzone .mini-num:hover,
+    .railzone .rail-foot .open-btn:hover {
+      border-color: #62656F;
+    }
+    .railzone .ni-num,
+    .railzone .ni-layout { background: #4A4D57; }
+    .railzone .mini-num.is-active {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
+    }
+    .railzone .nav-item:hover { background: rgba(255,255,255,.055); }
+    .railzone .nav-item.is-active {
+      background: rgba(90,79,214,.20);
+      border-color: color-mix(in srgb, var(--brand) 55%, transparent);
+    }
+    .railzone .nav-item.is-active .ni-title,
+    .railzone .nav-item.is-active .ni-layout { color: #C5BEFF; }
+    .railzone .ni-flowtag,
+    .railzone .grp-tag {
+      color: #C5BEFF;
+      background: rgba(90,79,214,.18);
+      border-color: color-mix(in srgb, var(--brand) 40%, transparent);
+    }
+    .railzone .rail-tabs { background: #2A2D36; }
+    .railzone .rail-tab.is-active {
+      background: #3C3F4A;
+      color: var(--ink);
+      box-shadow: 0 1px 2px rgba(0,0,0,.35);
+    }
+    .railzone .open-btn--primary {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
+    }
+
+    /* ── Stage ── */
+    .stage {
+      flex: 1;
+      position: relative;
+      min-width: 0;
+      height: 100%;
+      background: var(--bg);
+    }
+    .stage-bar {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      flex-wrap: wrap;
+    }
+    .crumb {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .crumb-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .crumb-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      color: var(--muted);
+      background: #EFEDE6;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+    .crumb-tag b { color: var(--ink); font-weight: 600; }
+    .crumb-tag .ck {
+      font: 500 9.5px/1 'JetBrains Mono', monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+    .spacer { flex: 1; }
+    .open-btn {
+      font: 500 12px/1 'Inter Tight', sans-serif;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 11px;
+      background: #FFF;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .open-btn:hover { color: var(--ink); border-color: #C9C5BB; }
+    .open-btn--primary {
+      color: #fff;
+      background: var(--brand);
+      border-color: var(--brand);
+    }
+    .open-btn--primary:hover { color: #fff; background: color-mix(in srgb, var(--brand) 88%, #000); border-color: color-mix(in srgb, var(--brand) 88%, #000); }
+    .open-btn.is-copied { color: var(--brand); border-color: color-mix(in srgb, var(--brand) 40%, transparent); }
+    .rail-foot {
+      flex: 0 0 auto;
+      border-top: 1px solid var(--line);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--panel);
+    }
+    .rail-foot .open-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 12px;
+      font-size: 13px;
+    }
+    .frame-wrap {
+      position: absolute;
+      inset: 0;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #F4F2EC;
+    }
+
+    /* ── Zen mode ── */
+    body.zen .rail { display: none; }
+    body.zen .stage-bar { display: none; }
+    body.zen .frame-wrap { top: 0; }
+    .zen-exit {
+      display: none;
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 50;
+      font: 500 12px/1 'Inter Tight', sans-serif;
+      color: #1A1917;
+      background: rgba(255,255,255,.92);
+      border: 1px solid #C9C5BB;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,.12);
+    }
+    body.zen .zen-exit { display: block; }
+    .zen-exit:hover { border-color: #9c978c; }
+  </style>
+</head>
+<body class="rail-collapsed">
+  <aside class="railzone">
+    <nav class="minirail" id="minirail">
+      <button class="mini-expand" id="miniExpand" type="button" title="Open full menu" aria-label="Open full menu">»</button>
+      <div class="mini-div"></div>
+      <div class="mini-nums" id="miniNums"></div>
+    </nav>
+    <div class="rail">
+    <div class="rail-head">
+      <button class="rail-collapse" id="railCollapse" type="button" title="Collapse to mini menu" aria-label="Collapse menu">«</button>
+    </div>
+
+    <div class="rail-list" id="list"></div>
+    <div class="rail-foot">
+      <div class="rail-tabs" id="tabs">
+        <button class="rail-tab is-active" data-tab="desktop" type="button">Desktop</button>
+        <button class="rail-tab" data-tab="mobile" type="button">Mobile</button>
+      </div>
+      <button class="open-btn" id="copyBtn" type="button">Copy link</button>
+      <button class="open-btn open-btn--primary" id="downloadBtn" type="button">Download HTML ↓</button>
+    </div>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <div class="frame-wrap">
+      <iframe id="frame" title="Prototype preview" allowfullscreen allow="fullscreen"></iframe>
+    </div>
+  </main>
+
+  <script>
+    // ── Test dimensions ────────────────────────────────────────────────
+    // Entry point and product choice are COUPLED: one-CTA entries land on a
+    // combined page where you choose; the two-CTA entry lands on a
+    // single-product page with a switch banner. Layout (rail vs collapsible)
+    // crosses freely with every entry → exactly 6 flows per platform.
+    const ENTRY = {
+      '1-1': {
+        label: '1 offer · 1 CTA',
+        tag: '1 / 1',
+        cta: '1 CTA · 1 offer',
+        desc: 'Single-amount widget — one combined amount, one button. Product is chosen on the offer page.',
+        choice: 'Choose on offer page',
+      },
+      '2-1': {
+        label: '2 offers · 1 CTA',
+        tag: '2 / 1',
+        cta: '1 CTA · 2 offers',
+        desc: 'Flex + Term shown side by side, one shared button. Product is chosen on the offer page.',
+        choice: 'Choose on offer page',
+      },
+      '2-2': {
+        label: '2 offers · 2 CTAs',
+        tag: '2 / 2',
+        cta: "2 CTA's · 2 offers",
+        flowTag: 'Cross-sell banner',
+        desc: 'Flex + Term shown side by side, a button each. Lands on one product with a banner to switch.',
+        choice: 'Banner + switch',
+      },
+    };
+    const LAYOUT = { single: '1 column', rail: 'Right-rail', collapsible: 'Accordion' };
+    const LAYOUT_TAG = { rail: 'Rail', single: 'Column', collapsible: 'Steps' };
+    // Layout is the primary organization; each layout holds the three entry-point
+    // variants. Order matches how we present them: 1 column, Right-rail, Accordion.
+    const LAYOUT_META = {
+      single: { label: '1 column', desc: 'Everything in one column — the offer summary is the final step.' },
+      rail: { label: 'Right-rail', desc: 'Steps on the left, a sticky offer summary in the right rail.' },
+      collapsible: { label: 'Accordion', desc: 'One step open at a time; completed steps collapse as you go.' },
+    };
+    const ENTRY_SHORT = { '1-1': 'Single amount', '2-1': 'Columns', '2-2': 'Separate pages' };
+
+    const FLOWS = [
+      // ── Desktop ──
+      { id: 'd-11-rail', platform: 'desktop', entry: '1-1', layout: 'rail',
+        title: 'Single amount → Right rail', file: 'Single amount → Right rail (B1).html' },
+      { id: 'd-11-single', platform: 'desktop', entry: '1-1', layout: 'single',
+        title: 'Single amount → Single column', file: 'Single amount → Single column.html' },
+      { id: 'd-11-col',  platform: 'desktop', entry: '1-1', layout: 'collapsible',
+        title: 'Single amount → Collapsible steps', file: 'Single amount → Collapsible steps.html' },
+      { id: 'd-21-rail', platform: 'desktop', entry: '2-1', layout: 'rail',
+        title: 'Columns → Right rail', file: 'Same page → Right rail (B1).html' },
+      { id: 'd-21-single', platform: 'desktop', entry: '2-1', layout: 'single',
+        title: 'Columns → Single column', file: 'Same page → Single column.html' },
+      { id: 'd-21-col',  platform: 'desktop', entry: '2-1', layout: 'collapsible',
+        title: 'Columns → Collapsible steps', file: 'Same page → Collapsible steps.html' },
+      { id: 'd-22-rail', platform: 'desktop', entry: '2-2', layout: 'rail',
+        title: 'Separate pages → Right rail', file: 'Separate pages → single-product.html' },
+      { id: 'd-22-single', platform: 'desktop', entry: '2-2', layout: 'single',
+        title: 'Separate pages → Single column', file: 'Separate pages → single column.html' },
+      { id: 'd-22-col',  platform: 'desktop', entry: '2-2', layout: 'collapsible',
+        title: 'Separate pages → Collapsible steps', file: 'Separate pages → collapsible steps.html' },
+
+      // ── Mobile ──
+      { id: 'm-11-rail', platform: 'mobile', entry: '1-1', layout: 'rail',
+        title: 'Single amount → Right rail', file: 'Single amount → Right rail (B1) (mobile).html' },
+      { id: 'm-11-single', platform: 'mobile', entry: '1-1', layout: 'single',
+        title: 'Single amount → Single column', file: 'Single amount → Single column (mobile).html' },
+      { id: 'm-11-col',  platform: 'mobile', entry: '1-1', layout: 'collapsible',
+        title: 'Single amount → Collapsible steps', file: 'Single amount → Collapsible steps (mobile).html' },
+      { id: 'm-21-rail', platform: 'mobile', entry: '2-1', layout: 'rail',
+        title: 'Columns → Right rail', file: 'Same page → Right rail (B1) (mobile).html' },
+      { id: 'm-21-single', platform: 'mobile', entry: '2-1', layout: 'single',
+        title: 'Columns → Single column', file: 'Same page → Single column (mobile).html' },
+      { id: 'm-21-col',  platform: 'mobile', entry: '2-1', layout: 'collapsible',
+        title: 'Columns → Collapsible steps', file: 'Same page → Collapsible steps (mobile).html' },
+      { id: 'm-22-rail', platform: 'mobile', entry: '2-2', layout: 'rail',
+        title: 'Separate pages → Right rail', file: 'Separate pages → single-product (mobile).html' },
+      { id: 'm-22-single', platform: 'mobile', entry: '2-2', layout: 'single',
+        title: 'Separate pages → Single column', file: 'Separate pages → single column (mobile).html' },
+      { id: 'm-22-col',  platform: 'mobile', entry: '2-2', layout: 'collapsible',
+        title: 'Separate pages → Collapsible steps', file: 'Separate pages → collapsible steps (mobile).html' },
+    ];
+
+    const list     = document.getElementById('list');
+    const frame    = document.getElementById('frame');
+    const KEY = 'flows-hub-active';
+    const buttons = {};
+    const miniNums = document.getElementById('miniNums');
+    const miniButtons = {};
+    function orderedFlows(platform) {
+      const out = [];
+      Object.keys(LAYOUT_META).forEach((lk) => {
+        FLOWS.filter((f) => f.platform === platform && f.layout === lk).forEach((f) => out.push(f));
+      });
+      return out;
+    }
+    function buildMiniRail(platform) {
+      miniNums.innerHTML = '';
+      Object.keys(miniButtons).forEach((k) => delete miniButtons[k]);
+      let n = 0;
+      // Group the numbers in 3s to mirror the layout grouping in the full sidebar.
+      Object.keys(LAYOUT_META).forEach((lk) => {
+        const items = FLOWS.filter((f) => f.platform === platform && f.layout === lk);
+        if (!items.length) return;
+        if (miniNums.children.length) {
+          const sp = document.createElement('div');
+          sp.className = 'mini-gap';
+          miniNums.appendChild(sp);
+        }
+        items.forEach((f) => {
+          n += 1;
+          const e = ENTRY[f.entry];
+          const b = document.createElement('button');
+          b.className = 'mini-num';
+          b.type = 'button';
+          b.textContent = n;
+          b.title = n + ' · ' + e.cta + ' · ' + LAYOUT[f.layout];
+          b.addEventListener('click', () => select(f.id));
+          miniNums.appendChild(b);
+          miniButtons[f.id] = b;
+        });
+      });
+    }
+
+    // ── Build nav grouped by layout, per platform ──
+    function buildNav(platform) {
+      list.innerHTML = '';
+      let navCount = 0;
+      Object.keys(LAYOUT_META).forEach((lk) => {
+        const items = FLOWS.filter((f) => f.platform === platform && f.layout === lk);
+        if (!items.length) return;
+        const meta = LAYOUT_META[lk];
+
+        const grp = document.createElement('div');
+        grp.className = 'grp';
+
+        const head = document.createElement('div');
+        head.className = 'grp-head';
+        head.innerHTML = '<div class="grp-label">' + meta.label + '</div>';
+        grp.appendChild(head);
+
+        const nav = document.createElement('div');
+        nav.className = 'nav';
+        items.forEach((f) => {
+          const e = ENTRY[f.entry];
+          navCount += 1;
+          const b = document.createElement('button');
+          b.className = 'nav-item';
+          b.type = 'button';
+          b.innerHTML =
+            '<span class="ni-num">' + navCount + '</span>' +
+            '<span class="ni-title">' + e.cta + '</span>' +
+            (e.flowTag ? '<span class="ni-flowtag">' + e.flowTag + '</span>' : '');
+          b.addEventListener('click', () => select(f.id));
+          nav.appendChild(b);
+          buttons[f.id] = b;
+        });
+        grp.appendChild(nav);
+        list.appendChild(grp);
+      });
+    }
+
+    function platformOf(f) { return f.platform; }
+
+    function showTab(tab) {
+      document.querySelectorAll('.rail-tab').forEach((b) =>
+        b.classList.toggle('is-active', b.dataset.tab === tab));
+      buildNav(tab);
+      buildMiniRail(tab);
+      const active = FLOWS.find((f) => f.id === localStorage.getItem(KEY));
+      if (active && buttons[active.id]) buttons[active.id].classList.add('is-active');
+      if (active && miniButtons[active.id]) miniButtons[active.id].classList.add('is-active');
+    }
+
+    document.getElementById('tabs').addEventListener('click', (e) => {
+      const btn = e.target.closest('.rail-tab');
+      if (!btn) return;
+      const tab = btn.dataset.tab;
+      showTab(tab);
+      list.scrollTop = 0;
+      const active = FLOWS.find((f) => f.id === localStorage.getItem(KEY));
+      if (!active || active.platform !== tab) {
+        const first = FLOWS.find((f) => f.platform === tab);
+        if (first) select(first.id);
+      }
+    });
+
+    function select(id) {
+      const f = FLOWS.find((x) => x.id === id) || FLOWS[0];
+      // rebuild nav/mini for the right platform, then highlight
+      if (!buttons[f.id] || buttons[f.id].closest('.rail') == null) buildNav(f.platform);
+      if (!miniButtons[f.id]) buildMiniRail(f.platform);
+      Object.values(buttons).forEach((b) => b.classList.remove('is-active'));
+      if (buttons[f.id]) buttons[f.id].classList.add('is-active');
+      Object.values(miniButtons).forEach((b) => b.classList.remove('is-active'));
+      if (miniButtons[f.id]) miniButtons[f.id].classList.add('is-active');
+
+      if (frame.getAttribute('src') !== f.file) frame.src = f.file;
+
+      localStorage.setItem(KEY, f.id);
+      document.querySelectorAll('.rail-tab').forEach((b) =>
+        b.classList.toggle('is-active', b.dataset.tab === f.platform));
+      if (location.hash.slice(1) !== f.id) history.replaceState(null, '', '#' + f.id);
+    }
+
+    const initial = location.hash.slice(1) || localStorage.getItem(KEY) || FLOWS[0].id;
+    const start = FLOWS.some((f) => f.id === initial) ? initial : FLOWS[0].id;
+    showTab(FLOWS.find((f) => f.id === start).platform);
+    select(start);
+
+    // Download → fetch the fully self-contained bundle of the selected
+    // prototype (no sidebar, no login, works offline) and save it locally,
+    // ready to hand to a test user.
+    const downloadBtn = document.getElementById('downloadBtn');
+    let dlTimer = null;
+    function niceName(f) {
+      const e = ENTRY[f.entry];
+      return e.cta + ' — ' + LAYOUT[f.layout] + (f.platform === 'mobile' ? ' (mobile)' : '');
+    }
+    downloadBtn.addEventListener('click', async () => {
+      const f = FLOWS.find((x) => x.id === localStorage.getItem(KEY)) || FLOWS[0];
+      const u = new URL('shareable/' + f.id + '.html', location.href);
+      u.search = location.search;     // carry the preview context/token
+      downloadBtn.textContent = 'Preparing…';
+      try {
+        const res = await fetch(u.href);
+        if (!res.ok) throw new Error('http ' + res.status);
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = niceName(f) + '.html';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+        downloadBtn.textContent = 'Downloaded ✓';
+        downloadBtn.classList.add('is-copied');
+      } catch (err) {
+        downloadBtn.textContent = 'Download failed — retry';
+      }
+      clearTimeout(dlTimer);
+      dlTimer = setTimeout(() => {
+        downloadBtn.textContent = 'Download HTML ↓';
+        downloadBtn.classList.remove('is-copied');
+      }, 2000);
+    });
+
+    // Copy a direct, shareable link to the selected prototype.
+    const copyBtn = document.getElementById('copyBtn');
+    let copyTimer = null;
+    copyBtn.addEventListener('click', async () => {
+      const f = FLOWS.find((x) => x.id === localStorage.getItem(KEY)) || FLOWS[0];
+      // Link to THIS launcher, deep-linked to the current flow via the hash.
+      // IMPORTANT: strip the ephemeral preview params (t / srcmap / _wr). The
+      // `t=` token is short-lived and session-bound — carrying it means a
+      // pasted link hits an EXPIRED token and the server replies "preview
+      // token required". A clean, tokenless serve URL instead lets the server
+      // mint a fresh token for whoever opens it (with project access).
+      const u = new URL(location.origin + location.pathname);
+      u.search = '';                  // drop t / srcmap / _wr — they expire
+      u.hash = f.id;                  // launcher opens straight to this flow
+      const url = u.href;
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch (err) {
+        const ta = document.createElement('textarea');
+        ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e2) {}
+        document.body.removeChild(ta);
+      }
+      copyBtn.textContent = 'Link copied ✓';
+      copyBtn.classList.add('is-copied');
+      clearTimeout(copyTimer);
+      copyTimer = setTimeout(() => {
+        copyBtn.textContent = 'Copy link';
+        copyBtn.classList.remove('is-copied');
+      }, 1800);
+    });
+
+    // ── Sidebar collapse: mini rail (numbers) ⇄ full sidebar ──
+    const COLLAPSE_KEY = 'flows-hub-rail-collapsed';
+    function setRail(collapsed) {
+      document.body.classList.toggle('rail-collapsed', collapsed);
+      localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0');
+    }
+    document.getElementById('miniExpand').addEventListener('click', () => setRail(false));
+    document.getElementById('railCollapse').addEventListener('click', () => setRail(true));
+    // Default to the mini rail; only show the full sidebar if explicitly opened.
+    setRail(localStorage.getItem(COLLAPSE_KEY) !== '0');
+
+    // ── Tweaks bridge (relay edit-mode messages to/from the embedded flow) ──
+    window.addEventListener('message', (e) => {
+      const type = e && e.data && e.data.type;
+      if (!type) return;
+      const fromFrame = frame.contentWindow && e.source === frame.contentWindow;
+      if (!fromFrame && (type === '__activate_edit_mode' || type === '__deactivate_edit_mode')) {
+        if (frame.contentWindow) frame.contentWindow.postMessage(e.data, '*');
+      }
+      if (fromFrame && (
+        type === '__edit_mode_available' ||
+        type === '__edit_mode_dismissed' ||
+        type === '__edit_mode_set_keys')) {
+        try { window.parent.postMessage(e.data, '*'); } catch (err) {}
+      }
+    });
+    frame.addEventListener('load', () => {
+      try { window.parent.postMessage({ type: '__edit_mode_available' }, '*'); } catch (err) {}
+    });
+  </script>
+</body>
+</html>
